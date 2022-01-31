@@ -1,18 +1,22 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <DataTable />
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import DataTable from "../src/components/DataTable.vue";
 
 export default {
   name: "App",
   components: {
-    HelloWorld,
+    DataTable,
   },
+  data() {
+    return {
+
+    }
+  }
 };
 </script>
 
