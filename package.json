@@ -1,16 +1,35 @@
 {
   "name": "v-datatable",
   "version": "0.1.0",
-  "private": true,
+  "description": "Datatable component for Vue 2.x",
+  "keywords": [
+    "vue",
+    "vue-component",
+    "vue-datatable",
+    "datatable",
+    "table",
+    "table-component",
+    "component"
+  ],
+  "homepage": "https://github.com/realsale/v-datatable#readme",
+  "bugs": {
+    "url": "https://github.com/realsale/v-datatable/issues"
+  },
+  "license": "MIT",
+  "author": "realsale <pwedesaken@gmail.com>",
+  "files": ["dist/*"],
+  "main": "dist/v-datatable.common.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/realsale/v-datatable.git"
+  },
+  "private": false,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve ./example/main.js",
+    "build": "vue-cli-service build --target lib --name v-datatable ./src/index.js",
     "lint": "vue-cli-service lint"
   },
-  "dependencies": {
-    "core-js": "^3.6.5",
-    "vue": "^2.6.11"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
@@ -21,6 +40,10 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^6.2.2",
     "prettier": "^2.2.1",
+    "vue": "^2.6.11",
     "vue-template-compiler": "^2.6.11"
+  },
+  "peerDependencies": {
+    "vue": "^2.6.11"
   }
 }
