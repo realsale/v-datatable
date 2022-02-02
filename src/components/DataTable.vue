@@ -3,7 +3,7 @@
     <table class="datatable">
       <tr>
         <th class="datatable__th" v-for="c in columns" :key="c.field">
-          {{ c.label || c.field }}
+          {{ c.label || c.field.split(".")[0] }}
         </th>
       </tr>
 
