@@ -2,16 +2,15 @@
   <div class="container">
     <table class="datatable">
       <tr>
-        <th
-          class="datatable__th"
-          v-for="c in columns"
-          :key="c.field">
-            {{ c.label || c.field }}
+        <th class="datatable__th" v-for="c in columns" :key="c.field">
+          {{ c.label || c.field }}
         </th>
       </tr>
 
       <tr v-for="d in data" :key="JSON.stringify(d)">
-        <td class="datatable__td" v-for="f in fields" :key="d[f]">{{ d[f] }}</td>
+        <td class="datatable__td" v-for="f in fields" :key="d[f]">
+          {{ getProp(d, f) }}
+        </td>
       </tr>
     </table>
   </div>
@@ -31,6 +30,12 @@ export default {
     return {
       fields: this.columns.map(c => c.field)
     };
+  },
+  methods: {
+    getProp(obj, path) {
+      // transform dotted string path to object property reference
+      return path.split(".").reduce((o, i) => o[i], obj);
+    }
   }
 };
 </script>
