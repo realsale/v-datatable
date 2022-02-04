@@ -2,13 +2,23 @@
   <div>
     <ul class="pagination">
       <li>
-        <a class="pag-btn" @click="prev">Previous</a>
+        <a
+          class="pag-btn"
+          :class="{'pag-btn--disabled': !hasPrev}"
+          @click="prev">
+          Previous
+        </a>
       </li>
       <li>
         <a class="pag-btn pag-btn--active">1</a>
       </li>
       <li>
-        <a class="pag-btn" @click="next">Next</a>
+        <a
+          class="pag-btn"
+          :class="{'pag-btn--disabled': !hasNext}"
+          @click="next">
+          Next
+        </a>
       </li>
     </ul>
   </div>
@@ -34,14 +44,16 @@ export default {
   data() {
     return {
       page: this.initialPage
-    }
+    };
   },
   methods: {
     prev() {
+      if (!this.hasPrev) return;
       --this.page;
       this.$emit("prev", this.page);
     },
     next() {
+      if (!this.hasNext) return;
       ++this.page;
       this.$emit("next", this.page);
     },
@@ -49,7 +61,20 @@ export default {
       this.$emit("jump", pageNumber);
     }
   },
-}
+  computed: {
+    lastPage() {
+      return Math.ceil(this.total / this.perPage);
+    },
+    hasPrev() {
+      if (this.page <= 1) return false;
+      return true;
+    },
+    hasNext() {
+      if (this.page >= this.lastPage) return false;
+      return true;
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -69,14 +94,21 @@ export default {
   font-weight: bold;
   color: #a8a8a8;
   cursor: pointer;
+  user-select: none;
 }
 
-.pag-btn:hover:not(.pag-btn--active) {
+.pag-btn:hover:not(.pag-btn--active):not(.pag-btn--disabled) {
   background: #eaeaea;
 }
 
 .pag-btn--active {
   background: #3399ff;
   color: #fff;
+}
+
+.pag-btn--disabled {
+  pointer-events: none;
+  color: #ddd;
+  cursor: default;
 }
 </style>
