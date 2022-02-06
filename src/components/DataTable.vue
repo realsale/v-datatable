@@ -7,34 +7,61 @@
         </th>
       </tr>
 
-      <tr v-for="d in data" :key="JSON.stringify(d)">
+      <tr v-for="d in limitData" :key="JSON.stringify(d)">
         <td class="datatable__td" v-for="f in fields" :key="d[f]">
           {{ getProp(d, f) }}
         </td>
       </tr>
     </table>
+
+    <DataTablePagination
+      :initialPage="initialPage"
+      :perPage="perPage"
+      :total="data.length"
+      @prev="pageChange"
+      @next="pageChange"
+      @jump="pageChange" />
   </div>
 </template>
 
 <script>
+import DataTablePagination from "./DataTablePagination";
+
 export default {
   name: "DataTable",
+  components: {
+    DataTablePagination
+  },
   props: {
     data: Array,
     columns: {
       type: Array,
       required: true
-    }
+    },
+    initialPage: Number
   },
   data() {
     return {
-      fields: this.columns.map(c => c.field)
+      fields: this.columns.map(c => c.field),
+      perPage: 10,
+      page: this.initialPage || 1
     };
   },
   methods: {
     getProp(obj, path) {
       // transform dotted string path to object property reference
       return path.split(".").reduce((o, i) => o[i], obj);
+    },
+    pageChange(n) {
+      this.page = n;
+    }
+  },
+  computed: {
+    recordStart() {
+      return (this.page - 1) * this.perPage;
+    },
+    limitData() {
+      return this.data.slice(this.recordStart, this.perPage * this.page);
     }
   }
 };
