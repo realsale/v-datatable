@@ -78,26 +78,27 @@ export default {
       return Math.ceil(this.total / this.perPage);
     },
     pages() {
+      /**
+       * page-number links
+       * max page number to be display, default: 7
+       * first and last page are static
+       * 
+       * max page number = mpn
+       * static page number = spn
+       * dynamic page number = dpn
+       * gap page number = itn
+       * 
+       * gap page number is the number of page(s) span
+       * from dynamic page center
+       * 
+       * count must start/end with number excluding first/last page
+       */
       const pages = [];
+      const mpn = 7;
+      const spn = 2;
+      let i;
 
-      if (this.lastPage > 2) {
-        /**
-         * page-number links
-         * max page number to be display, default: 7
-         * first and last page are static
-         * 
-         * max page number = mpn
-         * static page number = spn
-         * dynamic page number = dpn
-         * gap page number = itn
-         * 
-         * gap page number is the number of page(s) span
-         * from dynamic page center
-         * 
-         * count must start/end with number excluding first/last page
-         */
-        const mpn = 7;
-        const spn = 2;
+      if (this.lastPage > mpn) {
         const dpn = mpn - spn;
         const gpn = Math.floor(dpn / 2);
 
@@ -106,7 +107,7 @@ export default {
         const baseCntEnd = this.lastPage - 1;
         let cntStart, cntEnd;
 
-        for (let i = 0; i < len; ++i) {
+        for (i = 0; i < len; ++i) {
           cntStart = this.page - gpn;
           cntStart = cntStart > baseCntStart ? cntStart : baseCntStart;
 
@@ -119,6 +120,10 @@ export default {
           if (i === dpn - 1 && cntEnd < baseCntEnd) cntStart = "...";
 
           pages[i] = cntStart;
+        }
+      } else if (this.lastPage > spn) {
+        for (i = 2; i < this.lastPage; ++i) {
+          pages.push(i);
         }
       }
 
