@@ -1,5 +1,15 @@
 <template>
-  <div>
+  <div class="pagination-container">
+    <div>
+      <label for="per-page">Show: &nbsp;</label>
+      <select
+        id="per-page"
+        class="per-page"
+        @change="selectPageOption($event.target.value)">
+        <option v-for="p in perPageOptions" :key="p">{{ p }}</option>
+      </select>
+    </div>
+
     <ul class="pagination">
       <li>
         <a
@@ -42,18 +52,25 @@ export default {
       type: Number,
       required: true
     },
-    perPage: {
-      type: Number,
-      default: 10
-    },
     initialPage: {
       type: Number,
       default: 1
+    },
+    perPageOptions: {
+      type: Array,
+      default() {
+        return [10, 25, 50];
+      }
+    },
+    perPage: {
+      type: Number,
+      default: 10
     }
   },
   data() {
     return {
-      page: this.initialPage
+      page: this.initialPage,
+      selectedPerPage: this.perPage
     };
   },
   methods: {
@@ -71,11 +88,17 @@ export default {
       if (this.page === pageNumber || pageNumber === "...") return;
       this.page = pageNumber;
       this.$emit("jump", pageNumber);
+    },
+    selectPageOption(perPage) {
+      perPage = Number(perPage);
+      this.page = 1;
+      this.selectedPerPage = perPage;
+      this.$emit("on-page-option-change", perPage);
     }
   },
   computed: {
     lastPage() {
-      return Math.ceil(this.total / this.perPage);
+      return Math.ceil(this.total / this.selectedPerPage);
     },
     pages() {
       /**
@@ -147,39 +170,52 @@ export default {
 </script>
 
 <style scoped>
+.pagination-container {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  user-select: none;
+}
+
+.per-page {
+  border: 1px solid #eee;
+  background: #fff;
+  padding: 8px 12px;
+}
+
 .pagination {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .pag-btn {
   display: inline-block;
   border-radius: 4px;
   padding: 8px 12px;
-  font-size: 14px;
   font-weight: bold;
   color: #a8a8a8;
   cursor: pointer;
-  user-select: none;
 }
 
 .pag-btn:hover:not(.pag-btn--active):not(.pag-btn--disabled) {
   background: #eaeaea;
 }
 
-.pag-btn--active {
+.pag-btn--actinve,
+.pag-btn--disabled {
   pointer-events: none;
-  background: #3399ff;
-  color: #fff;
   cursor: default;
 }
 
+.pag-btn--active {
+  background: #3399ff;
+  color: #fff;
+}
+
 .pag-btn--disabled {
-  pointer-events: none;
   color: #ddd;
-  cursor: default;
 }
 </style>

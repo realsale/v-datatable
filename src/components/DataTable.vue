@@ -20,7 +20,8 @@
       :total="data.length"
       @prev="pageChange"
       @next="pageChange"
-      @jump="pageChange" />
+      @jump="pageChange"
+      @on-page-option-change="perPageChange" />
   </div>
 </template>
 
@@ -38,12 +39,14 @@ export default {
       type: Array,
       required: true
     },
-    initialPage: Number
+    initialPage: Number,
+    perPageOptions: Array,
+    perPage: Number
   },
   data() {
     return {
       fields: this.columns.map(c => c.field),
-      perPage: 10,
+      activePerPage: this.perPage || 10,
       page: this.initialPage || 1
     };
   },
@@ -54,14 +57,17 @@ export default {
     },
     pageChange(n) {
       this.page = n;
+    },
+    perPageChange(n) {
+      this.activePerPage = n;
     }
   },
   computed: {
     recordStart() {
-      return (this.page - 1) * this.perPage;
+      return (this.page - 1) * this.activePerPage;
     },
     limitData() {
-      return this.data.slice(this.recordStart, this.perPage * this.page);
+      return this.data.slice(this.recordStart, this.activePerPage * this.page);
     }
   }
 };
@@ -79,6 +85,7 @@ export default {
   border-collapse: collapse;
   font-size: 14px;
   border-radius: 5px;
+  margin: 16px 0;
 }
 
 .datatable__th {
