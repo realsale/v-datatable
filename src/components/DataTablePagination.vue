@@ -60,12 +60,24 @@ export default {
       type: Array,
       default() {
         return [10, 25, 50];
+      },
+      validator(value) {
+        return value.every(v => typeof v === "number");
       }
     },
     perPage: {
       type: Number,
-      default: 10
+      default() {
+        return this.perPageOptions[0] || 10;
+      }
     }
+  },
+  created() {
+    // emits initial pagination states
+    this.$emit("initial-state", {
+      page: this.page,
+      perPage: this.selectedPerPage
+    });
   },
   data() {
     return {

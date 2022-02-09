@@ -15,9 +15,9 @@
     </table>
 
     <DataTablePagination
-      :initialPage="initialPage"
-      :perPage="perPage"
       :total="data.length"
+      v-bind="pagination"
+      @initial-state="initialState"
       @prev="pageChange"
       @next="pageChange"
       @jump="pageChange"
@@ -39,18 +39,20 @@ export default {
       type: Array,
       required: true
     },
-    initialPage: Number,
-    perPageOptions: Array,
-    perPage: Number
+    pagination: Object
   },
   data() {
     return {
       fields: this.columns.map(c => c.field),
-      activePerPage: this.perPage || 10,
-      page: this.initialPage || 1
+      page: 1,
+      activePerPage: 10
     };
   },
   methods: {
+    initialState(pagState) {
+      this.page = pagState.page;
+      this.activePerPage = pagState.perPage;
+    },
     getProp(obj, path) {
       // transform dotted string path to object property reference
       return path.split(".").reduce((o, i) => o[i], obj);
