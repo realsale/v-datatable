@@ -10,6 +10,10 @@
       </select>
     </div>
 
+    <p class="page-details">
+      {{ recordStart }} - {{ recordShow }} of {{ total }}
+    </p>
+
     <ul class="pagination">
       <li>
         <a
@@ -119,6 +123,14 @@ export default {
     }
   },
   computed: {
+    recordStart() {
+      return (this.page - 1) * this.selectedPerPage + 1;
+    },
+    recordShow() {
+      if (this.total < this.page * this.selectedPerPage)
+        return this.total;
+      return this.page * this.selectedPerPage;
+    },
     lastPage() {
       return Math.ceil(this.total / this.selectedPerPage);
     },
@@ -203,6 +215,10 @@ export default {
   border: 1px solid #eee;
   background: #fff;
   padding: 8px 12px;
+}
+
+.page-details {
+  margin-left: 16px;
 }
 
 .pagination {
