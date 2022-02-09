@@ -15,7 +15,7 @@
         <a
           class="pag-btn"
           :class="{'pag-btn--disabled': !hasPrev}"
-          @click="prev">
+          @click="updatePage('prev')">
           Previous
         </a>
       </li>
@@ -27,7 +27,7 @@
             'pag-btn--active': page === p,
             'pag-btn--disabled': p === '...'
           }"
-          @click="jump(p)">
+          @click="updatePage('jump', p)">
           {{ p }}
         </a>
       </li>
@@ -36,7 +36,7 @@
         <a
           class="pag-btn"
           :class="{'pag-btn--disabled': !hasNext}"
-          @click="next">
+          @click="updatePage('next')">
           Next
         </a>
       </li>
@@ -86,25 +86,35 @@ export default {
     };
   },
   methods: {
-    prev() {
-      if (!this.hasPrev) return;
-      --this.page;
-      this.$emit("prev", this.page);
-    },
-    next() {
-      if (!this.hasNext) return;
-      ++this.page;
-      this.$emit("next", this.page);
-    },
-    jump(pageNumber) {
-      if (this.page === pageNumber || pageNumber === "...") return;
-      this.page = pageNumber;
-      this.$emit("jump", pageNumber);
+    updatePage(type, p) {
+      switch (type) {
+        case "prev":
+          if (!this.hasPrev) return;
+          --this.page;
+          break;
+
+        case "next":
+          if (!this.hasNext) return;
+          ++this.page;
+          break;
+
+        case "jump":
+          if (this.page === p || p === "...") return;
+          this.page = p;
+          break;
+      
+        default:
+          this.page = 1;
+          break;
+      }
+
+      this.$emit("on-page-change", this.page);
     },
     selectPageOption(perPage) {
       perPage = Number(perPage);
-      this.page = 1;
       this.selectedPerPage = perPage;
+      this.updatePage();
+
       this.$emit("on-page-option-change", perPage);
     }
   },
@@ -216,7 +226,7 @@ export default {
   background: #eaeaea;
 }
 
-.pag-btn--actinve,
+.pag-btn--active,
 .pag-btn--disabled {
   pointer-events: none;
   cursor: default;

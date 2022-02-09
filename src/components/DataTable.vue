@@ -18,9 +18,7 @@
       :total="data.length"
       v-bind="pagination"
       @initial-state="initialState"
-      @prev="pageChange"
-      @next="pageChange"
-      @jump="pageChange"
+      @on-page-change="pageChange"
       @on-page-option-change="perPageChange" />
   </div>
 </template>
