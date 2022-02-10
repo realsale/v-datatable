@@ -80,7 +80,7 @@ export default {
 }
 
 .datatable {
-  border: 1px solid #eee;
+  border: 1px solid #39f;
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
@@ -92,7 +92,8 @@ export default {
   text-align: left;
   text-transform: capitalize;
   padding: 8px 12px;
-  background: #eee;
+  background: #39f;
+  color: #fff;
 }
 
 .datatable__td {

@@ -14,6 +14,23 @@
       {{ recordStart }} - {{ recordShow }} of {{ total }}
     </p>
 
+    <div class="page-goto">
+      <input
+        type="number"
+        class="page-goto__input"
+        size="3"
+        v-model.number="goto"
+        :min="1"
+        :max="lastPage"
+        :placeholder="page" />
+      <button
+        type="button"
+        class="page-goto__button"
+        @click="updatePage('goto')">
+        Go
+      </button>
+    </div>
+
     <ul class="pagination">
       <li>
         <a
@@ -86,7 +103,8 @@ export default {
   data() {
     return {
       page: this.initialPage,
-      selectedPerPage: this.perPage
+      selectedPerPage: this.perPage,
+      goto: ""
     };
   },
   methods: {
@@ -106,7 +124,18 @@ export default {
           if (this.page === p || p === "...") return;
           this.page = p;
           break;
-      
+
+        case "goto":
+          if (
+            this.page === this.goto ||
+            this.goto < 1 ||
+            this.goto > this.lastPage)
+            return;
+
+          this.page = this.goto;
+          this.goto = null;
+          break;
+
         default:
           this.page = 1;
           break;
@@ -212,13 +241,43 @@ export default {
 }
 
 .per-page {
-  border: 1px solid #eee;
+  border: 1px solid #39f;
+  border-radius: 4px;
   background: #fff;
   padding: 8px 12px;
 }
 
 .page-details {
   margin-left: 16px;
+}
+
+.page-goto {margin-left: 16px;}
+
+.page-goto__input {
+  border: 1px solid #39f;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 8px 12px;
+  outline: none;
+}
+
+.page-goto__input::-webkit-outer-spin-button,
+.page-goto__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.page-goto__input {
+  -moz-appearance: textfield;
+}
+
+.page-goto__button {
+  padding: 8px 12px;
+  border: 1px solid #39f;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  background: #39f;
+  color: #fff;
 }
 
 .pagination {
@@ -249,7 +308,7 @@ export default {
 }
 
 .pag-btn--active {
-  background: #3399ff;
+  background: #39f;
   color: #fff;
 }
 
