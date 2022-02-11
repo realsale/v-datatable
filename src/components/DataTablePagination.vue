@@ -127,6 +127,8 @@ export default {
           break;
 
         case "goto":
+          this.goto = Math.floor(this.goto) ? Math.floor(this.goto) : "";
+
           if (
             this.page === this.goto ||
             this.goto < 1 ||
@@ -134,7 +136,7 @@ export default {
             return;
 
           this.page = this.goto;
-          this.goto = null;
+          this.goto = "";
           break;
 
         default:
