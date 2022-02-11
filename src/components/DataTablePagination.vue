@@ -22,7 +22,8 @@
         v-model.number="goto"
         :min="1"
         :max="lastPage"
-        :placeholder="page" />
+        :placeholder="page"
+        @keyup.enter="updatePage('goto')" />
       <button
         type="button"
         class="page-goto__button"
@@ -278,6 +279,7 @@ export default {
   border-bottom-right-radius: 4px;
   background: #39f;
   color: #fff;
+  cursor: pointer;
 }
 
 .pagination {
