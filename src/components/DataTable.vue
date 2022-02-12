@@ -9,7 +9,9 @@
 
       <tr v-for="d in limitData" :key="JSON.stringify(d)">
         <td class="datatable__td" v-for="f in fields" :key="d[f]">
-          {{ getProp(d, f) }}
+          <slot :name="`field.${f}`" v-bind:record="d">
+            {{ getProp(d, f) }}
+          </slot>
         </td>
       </tr>
     </table>
@@ -53,6 +55,10 @@ export default {
     },
     getProp(obj, path) {
       // transform dotted string path to object property reference
+      if (!path) {
+        console.warn("field key is missing");
+        return;
+      }
       return path.split(".").reduce((o, i) => o[i], obj);
     },
     pageChange(n) {
