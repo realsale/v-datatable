@@ -2,7 +2,13 @@
   <div class="container">
     <table class="datatable">
       <tr>
-        <th class="datatable__th" v-for="c in columns" :key="c.field">
+        <th
+          class="datatable__th"
+          :class="sortClass(c.field, c.sortable)"
+          @click="sort(c.field, c.sortable)"
+          v-for="c in columns"
+          :key="c.field"
+        >
           {{ c.label || c.field.split(".")[0] }}
         </th>
       </tr>
@@ -21,7 +27,8 @@
       v-bind="pagination"
       @initial-state="initialState"
       @on-page-change="pageChange"
-      @on-page-option-change="perPageChange" />
+      @on-page-option-change="perPageChange"
+    />
   </div>
 </template>
 
@@ -44,6 +51,10 @@ export default {
   data() {
     return {
       fields: this.columns.map(c => c.field),
+      sortBy: {
+        field: "",
+        dir: ""
+      },
       page: 1,
       activePerPage: 10
     };
@@ -61,6 +72,26 @@ export default {
       }
       return path.split(".").reduce((o, i) => o[i], obj);
     },
+    sortClass(field, sortable) {
+      return {
+        sort: sortable,
+        "sort--asc": field === this.sortBy.field && this.sortBy.dir === "asc",
+        "sort--desc": field === this.sortBy.field && this.sortBy.dir === "desc"
+      };
+    },
+    sort(field, sortable) {
+      if (!sortable) return;
+
+      if (this.sortBy.field === field) {
+        this.sortBy.field = this.sortBy.dir === "desc" ? "" : field;
+        this.sortBy.dir = this.sortBy.dir === "" ?
+          "asc" : this.sortBy.dir === "asc" ?
+          "desc" : "";
+      } else {
+        this.sortBy.field = field;
+        this.sortBy.dir = "asc";
+      }
+    },
     pageChange(n) {
       this.page = n;
     },
@@ -72,8 +103,33 @@ export default {
     recordStart() {
       return (this.page - 1) * this.activePerPage;
     },
+    sortedData() {
+      if (!this.sortBy.field) return this.data;
+
+      return this.data.slice(0).sort((itemA, itemB) => {
+        let a = itemA,
+          b = itemB;
+
+        if (this.sortBy.dir === "desc") {
+          a = itemB;
+          b = itemA;
+        }
+
+        if (
+          a[this.sortBy.field].toLowerCase() <=
+          b[this.sortBy.field].toLowerCase()
+        ){
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+    },
     limitData() {
-      return this.data.slice(this.recordStart, this.activePerPage * this.page);
+      return this.sortedData.slice(
+        this.recordStart,
+        this.activePerPage * this.page
+      );
     }
   }
 };
@@ -104,5 +160,46 @@ export default {
 
 .datatable__td {
   padding: 16px 12px;
+}
+
+.sort {
+  position: relative;
+  cursor: pointer;
+}
+
+.sort::before,
+.sort::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  margin-left: -12px;
+  border: 6px solid transparent;
+  border-bottom-color: #bbb;
+  top: 25%;
+  transform: translateY(-50%);
+}
+
+.sort::after {
+  top: initial;
+  bottom: 25%;
+  transform: translateY(50%);
+  border-bottom-color: transparent;
+  border-top-color: #bbb;
+}
+
+.sort--desc::before {
+  border-bottom-color: #fff;
+}
+
+.sort--desc::after {
+  border-top-color: transparent;
+}
+
+.sort--asc::after {
+  border-top-color: #fff;
+}
+
+.sort--asc::before {
+  border-bottom-color: transparent;
 }
 </style>
