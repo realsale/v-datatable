@@ -5,7 +5,7 @@
         <th
           class="datatable__th"
           :class="sortClass(c.field, c.sortable)"
-          @click="sort(c.field, c.sortable)"
+          @click="sort(c.field, c.sortable, c.type)"
           v-for="c in columns"
           :key="c.field"
         >
@@ -53,7 +53,8 @@ export default {
       fields: this.columns.map(c => c.field),
       sortBy: {
         field: "",
-        dir: ""
+        dir: "",
+        type: ""
       },
       page: 1,
       activePerPage: 10
@@ -79,7 +80,7 @@ export default {
         "sort--desc": field === this.sortBy.field && this.sortBy.dir === "desc"
       };
     },
-    sort(field, sortable) {
+    sort(field, sortable, type) {
       if (!sortable) return;
 
       if (this.sortBy.field === field) {
@@ -90,6 +91,16 @@ export default {
       } else {
         this.sortBy.field = field;
         this.sortBy.dir = "asc";
+      }
+      this.sortBy.type = type || "";
+    },
+    sortTypeFunction(type) {
+      if (type === "number") {
+        return (a, b) => a - b;
+      } else if(type === "date") {
+        return (a, b) => new Date(a) - new Date(b);
+      } else {
+        return (a, b) => a.toLowerCase() <= b.toLowerCase() ? -1 : 1;
       }
     },
     pageChange(n) {
@@ -106,6 +117,8 @@ export default {
     sortedData() {
       if (!this.sortBy.field) return this.data;
 
+      const typeFn = this.sortTypeFunction(this.sortBy.type);
+
       return this.data.slice(0).sort((itemA, itemB) => {
         let a = itemA,
           b = itemB;
@@ -115,14 +128,7 @@ export default {
           b = itemA;
         }
 
-        if (
-          a[this.sortBy.field].toLowerCase() <=
-          b[this.sortBy.field].toLowerCase()
-        ){
-          return -1;
-        } else {
-          return 1;
-        }
+        return typeFn(a[this.sortBy.field], b[this.sortBy.field]);
       });
     },
     limitData() {
