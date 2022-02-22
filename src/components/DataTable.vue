@@ -46,7 +46,10 @@ export default {
       type: Array,
       required: true
     },
-    initialSort: Object,
+    initialSort: {
+      type: Object,
+      default: () => ({})
+    },
     pagination: Object
   },
   data() {
