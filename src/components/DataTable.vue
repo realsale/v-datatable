@@ -46,21 +46,38 @@ export default {
       type: Array,
       required: true
     },
+    initialSort: Object,
     pagination: Object
   },
   data() {
     return {
       fields: this.columns.map(c => c.field),
-      sortBy: {
-        field: "",
-        dir: "",
-        type: ""
-      },
+      sortBy: this.initializeSortBy(),
       page: 1,
       activePerPage: 10
     };
   },
   methods: {
+    initializeSortBy() {
+      let column, field = "", type = "";
+
+      if (this.initialSort.field) {
+        column = this.columns.find(c => {
+          return c.sortable && c.field === this.initialSort.field;
+        });
+      }
+
+      if (column) {
+        field = column.field;
+        type = column.type || "";
+      }
+
+      return {
+        field,
+        dir: this.initialSort.dir || "",
+        type
+      };
+    },
     initialState(pagState) {
       this.page = pagState.page;
       this.activePerPage = pagState.perPage;
@@ -148,6 +165,7 @@ export default {
 }
 
 .datatable {
+  table-layout: fixed;
   border: 1px solid #39f;
   width: 100%;
   border-collapse: collapse;
@@ -162,6 +180,7 @@ export default {
   padding: 8px 12px;
   background: #39f;
   color: #fff;
+  user-select: none;
 }
 
 .datatable__td {
@@ -193,19 +212,11 @@ export default {
   border-top-color: #bbb;
 }
 
-.sort--desc::before {
+.sort--asc::before {
   border-bottom-color: #fff;
 }
 
 .sort--desc::after {
-  border-top-color: transparent;
-}
-
-.sort--asc::after {
   border-top-color: #fff;
-}
-
-.sort--asc::before {
-  border-bottom-color: transparent;
 }
 </style>
