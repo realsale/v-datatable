@@ -64,12 +64,17 @@ export default {
     initializeSortBy() {
       let column, field = "", type = "";
 
+      /**
+       * by making sure that only sortable field is allowed to initially sorted
+       * find column via initial sort field key and check if it is sortable
+       */
       if (this.initialSort.field) {
         column = this.columns.find(c => {
           return c.sortable && c.field === this.initialSort.field;
         });
       }
 
+      // extracting field and type of sortable field
       if (column) {
         field = column.field;
         type = column.type || "";
