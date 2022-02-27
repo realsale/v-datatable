@@ -35,6 +35,8 @@
 <script>
 import DataTablePagination from "./DataTablePagination";
 
+const sortDirs = ["asc", "desc", "none"];
+
 export default {
   name: "DataTable",
   components: {
@@ -62,7 +64,7 @@ export default {
   },
   methods: {
     initializeSortBy() {
-      let column, field = "", type = "";
+      let column, field = "", dir = "none", type = "";
 
       /**
        * by making sure that only sortable field is allowed to initially sorted
@@ -74,17 +76,17 @@ export default {
         });
       }
 
-      // extracting field and type of sortable field
       if (column) {
+        // extracting field and type of sortable field
         field = column.field;
         type = column.type || "";
+
+        // check if dir field in initial sort is valid or does exist
+        let initialDir = sortDirs.find(d => d === this.initialSort.dir);
+        if (initialDir) dir = initialDir;
       }
 
-      return {
-        field,
-        dir: this.initialSort.dir || "",
-        type
-      };
+      return { field, dir, type };
     },
     initialState(pagState) {
       this.page = pagState.page;
@@ -109,13 +111,12 @@ export default {
       if (!sortable) return;
 
       if (this.sortBy.field === field) {
-        this.sortBy.field = this.sortBy.dir === "desc" ? "" : field;
-        this.sortBy.dir = this.sortBy.dir === "" ?
-          "asc" : this.sortBy.dir === "asc" ?
-          "desc" : "";
+        // get sort dir index to increment its value
+        let i = sortDirs.findIndex(d => d === this.sortBy.dir);
+        this.sortBy.dir = sortDirs[(++i) % 3];
       } else {
         this.sortBy.field = field;
-        this.sortBy.dir = "asc";
+        this.sortBy.dir = sortDirs[0];
       }
       this.sortBy.type = type || "";
     },
@@ -140,7 +141,7 @@ export default {
       return (this.page - 1) * this.activePerPage;
     },
     sortedData() {
-      if (!this.sortBy.field) return this.data;
+      if (!this.sortBy.field || this.sortBy.dir === "none") return this.data;
 
       const typeFn = this.sortTypeFunction(this.sortBy.type);
 
