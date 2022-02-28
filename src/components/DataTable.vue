@@ -35,12 +35,18 @@
 <script>
 import DataTablePagination from "./DataTablePagination";
 
+// referenced before created hook
 const sortDirs = ["asc", "desc", "none"];
+// length minus 1, don't allow sorting order to none by default
+let len = sortDirs.length - 1;
 
 export default {
   name: "DataTable",
   components: {
     DataTablePagination
+  },
+  created() {
+    len += this.allowNoSort;
   },
   props: {
     data: Array,
@@ -51,6 +57,10 @@ export default {
     initialSort: {
       type: Object,
       default: () => ({})
+    },
+    allowNoSort: {
+      type: Boolean,
+      default: false
     },
     pagination: Object
   },
@@ -113,7 +123,7 @@ export default {
       if (this.sortBy.field === field) {
         // get sort dir index to increment its value
         let i = sortDirs.findIndex(d => d === this.sortBy.dir);
-        this.sortBy.dir = sortDirs[(++i) % 3];
+        this.sortBy.dir = sortDirs[++i % len];
       } else {
         this.sortBy.field = field;
         this.sortBy.dir = sortDirs[0];
