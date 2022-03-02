@@ -35,19 +35,10 @@
 <script>
 import DataTablePagination from "./DataTablePagination";
 
-// referenced before created hook
-let sortDirs = ["asc", "desc", "none"];
-// length minus 1, don't allow sorting order to none by default
-let len = sortDirs.length - 1;
-
 export default {
   name: "DataTable",
   components: {
     DataTablePagination
-  },
-  created() {
-    len += this.allowNoSort;
-    if (this.reverseSort) sortDirs = ["desc", "asc", "none"];
   },
   props: {
     data: Array,
@@ -59,11 +50,11 @@ export default {
       type: Object,
       default: () => ({})
     },
-    allowNoSort: {
+    reverseSort: {
       type: Boolean,
       default: false
     },
-    reverseSort: {
+    allowNoSort: {
       type: Boolean,
       default: false
     },
@@ -72,12 +63,21 @@ export default {
   data() {
     return {
       fields: this.columns.map(c => c.field),
+      sortDirs: this.initializeSortDirs(),
       sortBy: this.initializeSortBy(),
       page: 1,
       activePerPage: 10
     };
   },
   methods: {
+    initializeSortDirs() {
+      const sortDirs = ["asc", "desc"];
+
+      if (this.reverseSort) sortDirs.reverse();
+      if (this.allowNoSort) sortDirs.push("none");
+
+      return sortDirs;
+    },
     initializeSortBy() {
       let column, field = "", dir = "none", type = "";
 
@@ -96,9 +96,9 @@ export default {
         field = column.field;
         type = column.type || "";
 
-        // check if dir field in initial sort is valid or does exist
-        let initialDir = sortDirs.find(d => d === this.initialSort.dir);
-        if (initialDir) dir = initialDir;
+        // check if dir field in initial sort has valid value (asc|desc)
+        if (this.initialSort.dir === "asc" || this.initialSort.dir === "desc")
+          dir = this.initialSort.dir;
       }
 
       return { field, dir, type };
@@ -127,11 +127,11 @@ export default {
 
       if (this.sortBy.field === field) {
         // get sort dir index to increment its value
-        let i = sortDirs.findIndex(d => d === this.sortBy.dir);
-        this.sortBy.dir = sortDirs[++i % len];
+        let i = this.sortDirs.indexOf(this.sortBy.dir);
+        this.sortBy.dir = this.sortDirs[++i % this.dirsCount];
       } else {
         this.sortBy.field = field;
-        this.sortBy.dir = sortDirs[0];
+        this.sortBy.dir = this.sortDirs[0];
       }
       this.sortBy.type = type || "";
     },
@@ -152,8 +152,8 @@ export default {
     }
   },
   computed: {
-    recordStart() {
-      return (this.page - 1) * this.activePerPage;
+    dirsCount() {
+      return this.sortDirs.length;
     },
     sortedData() {
       if (!this.sortBy.field || this.sortBy.dir === "none") return this.data;
@@ -171,6 +171,9 @@ export default {
 
         return typeFn(a[this.sortBy.field], b[this.sortBy.field]);
       });
+    },
+    recordStart() {
+      return (this.page - 1) * this.activePerPage;
     },
     limitData() {
       return this.sortedData.slice(
