@@ -36,7 +36,7 @@
 import DataTablePagination from "./DataTablePagination";
 
 // referenced before created hook
-const sortDirs = ["asc", "desc", "none"];
+let sortDirs = ["asc", "desc", "none"];
 // length minus 1, don't allow sorting order to none by default
 let len = sortDirs.length - 1;
 
@@ -47,6 +47,7 @@ export default {
   },
   created() {
     len += this.allowNoSort;
+    if (this.reverseSort) sortDirs = ["desc", "asc", "none"];
   },
   props: {
     data: Array,
@@ -59,6 +60,10 @@ export default {
       default: () => ({})
     },
     allowNoSort: {
+      type: Boolean,
+      default: false
+    },
+    reverseSort: {
       type: Boolean,
       default: false
     },
