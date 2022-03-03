@@ -63,21 +63,12 @@ export default {
   data() {
     return {
       fields: this.columns.map(c => c.field),
-      sortDirs: this.initializeSortDirs(),
       sortBy: this.initializeSortBy(),
       page: 1,
       activePerPage: 10
     };
   },
   methods: {
-    initializeSortDirs() {
-      const sortDirs = ["asc", "desc"];
-
-      if (this.reverseSort) sortDirs.reverse();
-      if (this.allowNoSort) sortDirs.push("none");
-
-      return sortDirs;
-    },
     initializeSortBy() {
       let column, field = "", dir = "none", type = "";
 
@@ -152,6 +143,14 @@ export default {
     }
   },
   computed: {
+    sortDirs() {
+      const sortDirs = ["asc", "desc"];
+
+      if (this.reverseSort) sortDirs.reverse();
+      if (this.allowNoSort) sortDirs.push("none");
+
+      return sortDirs;
+    },
     dirsCount() {
       return this.sortDirs.length;
     },
