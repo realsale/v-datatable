@@ -101,6 +101,11 @@ export default {
       perPage: this.selectedPerPage
     });
   },
+  watch: {
+    total() {
+      this.updatePage();
+    }
+  },
   data() {
     return {
       page: this.initialPage,
@@ -147,8 +152,7 @@ export default {
       this.$emit("on-page-change", this.page);
     },
     selectPageOption(perPage) {
-      perPage = Number(perPage);
-      this.selectedPerPage = perPage;
+      this.selectedPerPage = Number(perPage);
       this.updatePage();
 
       this.$emit("on-page-option-change", perPage);

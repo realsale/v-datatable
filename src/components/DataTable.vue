@@ -1,5 +1,13 @@
 <template>
   <div class="container">
+    <div class="filter">
+      <input
+        class="search"
+        type="text"
+        placeholder="Search"
+        v-model="searchKey" />
+    </div>
+
     <table class="datatable">
       <tr>
         <th
@@ -23,7 +31,7 @@
     </table>
 
     <DataTablePagination
-      :total="data.length"
+      :total="filteredData.length"
       v-bind="pagination"
       @initial-state="initialState"
       @on-page-change="pageChange"
@@ -63,6 +71,7 @@ export default {
   data() {
     return {
       fields: this.columns.map(c => c.field),
+      searchKey: "",
       sortBy: this.initializeSortBy(),
       page: 1,
       activePerPage: 10
@@ -143,6 +152,28 @@ export default {
     }
   },
   computed: {
+    searchableFields() {
+      return this.columns
+        .filter(c => {
+          return c.searchable;
+        })
+        .map(c => {
+          return c.field;
+        });
+    },
+    filteredData() {
+      const searchPattern = new RegExp(this.searchKey, "i");
+
+      if (this.searchableFields.length) {
+        return this.data.filter(d => {
+          return this.searchableFields.find(sf => {
+            return d[sf].toString().search(searchPattern) < 0 ? false : true;
+          });
+        });
+      } else {
+        return this.data;
+      }
+    },
     sortDirs() {
       const sortDirs = ["asc", "desc"];
 
@@ -155,11 +186,14 @@ export default {
       return this.sortDirs.length;
     },
     sortedData() {
-      if (!this.sortBy.field || this.sortBy.dir === "none") return this.data;
+      if (
+        !this.sortBy.field ||
+        this.sortBy.dir === "none")
+        return this.filteredData;
 
       const typeFn = this.sortTypeFunction(this.sortBy.type);
 
-      return this.data.slice(0).sort((itemA, itemB) => {
+      return this.filteredData.slice(0).sort((itemA, itemB) => {
         let a = itemA,
           b = itemB;
 
@@ -211,6 +245,18 @@ export default {
 
 .datatable__td {
   padding: 16px 12px;
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+}
+
+.search {
+  padding: 8px 12px;
+  border: 1px solid #39f;
+  outline: none;
+  margin-left: auto;
 }
 
 .sort {
