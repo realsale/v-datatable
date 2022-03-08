@@ -152,21 +152,15 @@ export default {
     }
   },
   computed: {
-    searchableFields() {
-      return this.columns
-        .filter(c => {
-          return c.searchable;
-        })
-        .map(c => {
-          return c.field;
-        });
-    },
     filteredData() {
       const searchPattern = new RegExp(this.searchKey, "i");
+      const searchableFields = this.columns
+        .filter(c => c.searchable)
+        .map(c => c.field);
 
-      if (this.searchableFields.length) {
+      if (searchableFields.length) {
         return this.data.filter(d => {
-          return this.searchableFields.find(sf => {
+          return searchableFields.find(sf => {
             return d[sf].toString().search(searchPattern) < 0 ? false : true;
           });
         });
