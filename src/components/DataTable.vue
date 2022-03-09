@@ -152,6 +152,23 @@ export default {
     }
   },
   computed: {
+    formattedData() {
+      const formatableFields = this.columns
+        .filter(c => {
+          return c.format && typeof c.format === "function";
+        });
+
+      if (formatableFields.length) {
+        return this.data.map(d => {
+          formatableFields.forEach(f => {
+            d[f.field] = f.format(d[f.field]);
+          });
+
+          return d;
+        });
+      }
+      return this.data;
+    },
     filteredData() {
       const searchPattern = new RegExp(this.searchKey, "i");
       const searchableFields = this.columns
@@ -159,14 +176,13 @@ export default {
         .map(c => c.field);
 
       if (searchableFields.length) {
-        return this.data.filter(d => {
+        return this.formattedData.filter(d => {
           return searchableFields.find(sf => {
             return d[sf].toString().search(searchPattern) < 0 ? false : true;
           });
         });
-      } else {
-        return this.data;
       }
+      return this.formattedData;
     },
     sortDirs() {
       const sortDirs = ["asc", "desc"];
