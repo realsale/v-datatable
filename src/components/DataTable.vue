@@ -146,9 +146,11 @@ export default {
     },
     pageChange(n) {
       this.page = n;
+      this.$emit("on-page-change", n);
     },
     perPageChange(n) {
       this.activePerPage = n;
+      this.$emit("on-page-option-change", n);
     }
   },
   computed: {
