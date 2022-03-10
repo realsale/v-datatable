@@ -145,6 +145,8 @@ export default {
           break;
 
         default:
+          if (this.page === 1) return;
+
           this.page = 1;
           break;
       }
