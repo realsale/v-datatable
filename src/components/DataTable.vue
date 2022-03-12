@@ -171,20 +171,27 @@ export default {
       }
       return this.data;
     },
+    searchableFields() {
+      return this.columns.filter(c => c.searchable).map(c => c.field);
+    },
     filteredData() {
-      const searchPattern = new RegExp(this.searchKey, "i");
-      const searchableFields = this.columns
-        .filter(c => c.searchable)
-        .map(c => c.field);
+      if (!this.searchableFields.length || !this.searchKey)
+        return this.formattedData;
 
-      if (searchableFields.length) {
-        return this.formattedData.filter(d => {
-          return searchableFields.find(sf => {
-            return d[sf].toString().search(searchPattern) < 0 ? false : true;
-          });
+      const searchPattern = new RegExp(this.searchKey, "i");
+
+      const filtered = this.formattedData.filter(d => {
+        return this.searchableFields.find(sf => {
+          return d[sf].toString().search(searchPattern) < 0 ? false : true;
         });
-      }
-      return this.formattedData;
+      });
+
+      this.$emit("on-search", {
+        searchKey: this.searchKey,
+        rowCount: filtered.length
+      });
+
+      return filtered;
     },
     sortDirs() {
       const sortDirs = ["asc", "desc"];
