@@ -5,11 +5,14 @@
         class="search"
         type="text"
         placeholder="Search"
-        v-model="searchKey" />
+        v-model="searchKey"
+      />
     </div>
 
     <table class="datatable">
       <tr>
+        <th v-if="rowDetail" class="datatable__th"></th>
+
         <th
           class="datatable__th"
           :class="sortClass(c.field, c.sortable)"
@@ -21,13 +24,40 @@
         </th>
       </tr>
 
-      <tr v-for="d in limitData" :key="JSON.stringify(d)">
-        <td class="datatable__td" v-for="f in fields" :key="d[f]">
-          <slot :name="`field.${f}`" v-bind:record="d">
-            {{ getProp(d, f) }}
-          </slot>
-        </td>
-      </tr>
+      <template v-for="(d, i) in limitData">
+        <tr :key="JSON.stringify(d)">
+          <td v-if="rowDetail" class="datatable__td">
+            <button
+              type="button"
+              class="row-detail-btn"
+              :ref="`btn${i}`"
+              @click="toggleRowDetail(i)"
+            >
+              +
+            </button>
+          </td>
+
+          <td class="datatable__td" v-for="f in fields" :key="d[f]">
+            <slot :name="`field.${f}`" v-bind:record="d">
+              {{ getProp(d, f) }}
+            </slot>
+          </td>
+        </tr>
+
+        <tr
+          v-if="rowDetail"
+          :key="`${JSON.stringify(d)}-dropdown`"
+          :ref="`tr${i}`"
+          class="row-detail"
+        >
+          <td
+            class="datatable__td datatable__td--no-padding"
+            :colspan="fields.length + 1"
+          >
+            <slot name="row-detail" v-bind:row="d"></slot>
+          </td>
+        </tr>
+      </template>
     </table>
 
     <DataTablePagination
@@ -63,6 +93,10 @@ export default {
       default: false
     },
     allowNoSort: {
+      type: Boolean,
+      default: false
+    },
+    rowDetail: {
       type: Boolean,
       default: false
     },
@@ -143,6 +177,16 @@ export default {
       } else {
         return (a, b) => a.toLowerCase() <= b.toLowerCase() ? -1 : 1;
       }
+    },
+    toggleRowDetail(i) {
+      const btn = this.$refs[`btn${i}`][0];
+      const tr = this.$refs[`tr${i}`][0];
+      // const btn = e.target;
+      // const tr = btn.closest("tr").nextElementSibling;
+
+      btn.innerHTML = btn.innerHTML.trim() === "+" ? "-" : "+";
+      btn.classList.toggle("row-detail-btn--close");
+      tr.classList.toggle("row-detail--show");
     },
     pageChange(n) {
       this.page = n;
@@ -265,6 +309,26 @@ export default {
 .datatable__td {
   padding: 16px 12px;
 }
+
+.datatable__td--no-padding {
+  padding: 0;
+}
+
+.row-detail-btn {
+  border: none;
+  background: #39f;
+  width: 24px;
+  height: 24px;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.row-detail-btn--close {background: tomato;}
+
+.row-detail {display: none;}
+
+.row-detail--show {display: table-row;}
 
 .filter {
   display: flex;
