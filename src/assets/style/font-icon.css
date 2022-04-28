@@ -9,7 +9,7 @@
   font-display: block;
 }
 
-.icon {
+._icon {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'vdatatable-font-icons' !important;
   speak: never;
@@ -24,18 +24,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon__sort:before {
+._icon__sort:before {
   content: "\e900";
 }
-.icon__sort-asc:before {
+._icon__sort-asc:before {
   content: "\e902";
 }
-.icon__sort-desc:before {
+._icon__sort-desc:before {
   content: "\e904";
 }
-.icon__remove-circle:before {
+._icon__remove-circle:before {
   content: "\e901";
 }
-.icon__add-circle:before {
+._icon__add-circle:before {
   content: "\e903";
 }

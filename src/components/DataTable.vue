@@ -1,32 +1,33 @@
 <template>
-  <div class="root-container">
-    <div class="filter">
+  <div :class="obtainClasses.rootContainer">
+    <div :class="obtainClasses.filterContainer">
       <input
-        class="search"
+        :class="obtainClasses.search"
         type="text"
         placeholder="Search"
         v-model="searchKey"
       />
     </div>
 
-    <div class="datatable-container">
-      <table class="datatable">
-        <thead>
-          <tr>
-            <th v-if="rowDetail" class="datatable__th"></th>
+    <div :class="obtainClasses.tableContainer">
+      <table :class="obtainClasses.table">
+        <thead :class="obtainClasses.thead">
+          <tr :class="obtainClasses.tr">
+            <th v-if="rowDetail" :class="obtainClasses.th"></th>
 
             <th
-              class="datatable__th"
-              :class="{'datatable__th--sort': c.sortable}"
+              :class="[
+                obtainClasses.th,
+                {'_datatable__th--sort': c.sortable}
+              ]"
               @click="sort(c.field, c.sortable, c.type)"
               v-for="c in columns"
               :key="c.field"
             >
-              <div v-if="c.sortable" class="sort-wrapper">
+              <div v-if="c.sortable" class="_sort-icon-wrapper">
                 {{ c.label || c.field.split(".")[0] }}
 
-                <span class="icon" :class="sortClass(c.field, c.sortable)">
-                </span>
+                <span :class="sortClass(c.field, c.sortable)"></span>
               </div>
 
               <template v-else>
@@ -36,18 +37,21 @@
           </tr>
         </thead>
 
-        <tbody>
+        <tbody :class="obtainClasses.tbody">
           <template v-for="(d, i) in limitData">
-            <tr :key="JSON.stringify(d)">
-              <td v-if="rowDetail" class="datatable__td">
+            <tr :class="obtainClasses.tr" :key="JSON.stringify(d)">
+              <td v-if="rowDetail" :class="obtainClasses.td">
                 <span
                   :ref="`btn${i}`"
                   @click="toggleRowDetail(i)"
-                  class="icon icon__add-circle row-toggle">
+                  :class="[
+                    obtainClasses.rowDetailBtn,
+                    obtainClasses.rowDetailBtnIconOpen
+                  ]">
                 </span>
               </td>
 
-              <td class="datatable__td" v-for="f in fields" :key="d[f]">
+              <td :class="obtainClasses.td" v-for="f in fields" :key="d[f]">
                 <slot :name="`field.${f}`" v-bind:record="d">
                   {{ getProp(d, f) }}
                 </slot>
@@ -58,10 +62,11 @@
               v-if="rowDetail"
               :key="`${JSON.stringify(d)}-dropdown`"
               :ref="`tr${i}`"
+              :class="obtainClasses.tr"
               class="row-detail"
             >
               <td
-                class="datatable__td datatable__td--no-padding"
+                :class="[obtainClasses.td, obtainClasses.rowDetailTd]"
                 :colspan="fields.length + 1"
               >
                 <slot name="row-detail" v-bind:row="d"></slot>
@@ -112,7 +117,11 @@ export default {
       type: Boolean,
       default: false
     },
-    pagination: Object
+    pagination: Object,
+    dtClasses: {
+      type: Object,
+      default: () => ({})
+    }
   },
   data() {
     return {
@@ -166,11 +175,15 @@ export default {
       const isAsc = this.sortBy.dir == "asc";
       const isDesc = this.sortBy.dir == "desc";
 
-      return {
-        'icon__sort': !isSameField && sortable || sortable && !isAsc && !isDesc,
-        "icon__sort-asc": isSameField && isAsc,
-        "icon__sort-desc": isSameField && isDesc
-      };
+      return [
+        this.obtainClasses.sort,
+        {
+          [this.obtainClasses.sortIconSort]:
+            (!isSameField && sortable) || (sortable && !isAsc && !isDesc),
+          [this.obtainClasses.sortIconAsc]: isSameField && isAsc,
+          [this.obtainClasses.sortIconDesc]: isSameField && isDesc
+        }
+      ];
     },
     sort(field, sortable, type) {
       if (!sortable) return;
@@ -197,16 +210,17 @@ export default {
     toggleRowDetail(i) {
       const btn = this.$refs[`btn${i}`][0];
       const tr = this.$refs[`tr${i}`][0];
-      let oldClass = "icon__remove-circle";
-      let newClass = "icon__add-circle";
+      const openClass = this.obtainClasses.rowDetailBtnIconOpen;
+      const closeClass = this.obtainClasses.rowDetailBtnIconClose;
 
-      if (btn.classList.contains("icon__add-circle")) {
-        oldClass = "icon__add-circle";
-        newClass = "icon__remove-circle";
-      }
+      /**
+       * icon change class
+       * replacing class, should only one class can be present at a time
+       * e.g. font-icons that has a dedicated class name for each single icon
+       */
+      btn.classList.toggle(openClass);
+      btn.classList.toggle(closeClass);
 
-      btn.classList.replace(oldClass, newClass);
-      btn.classList.toggle("row-toggle--close");
       tr.classList.toggle("row-detail--show");
     },
     pageChange(n) {
@@ -297,6 +311,31 @@ export default {
         this.recordStart,
         this.activePerPage * this.page
       );
+    },
+    obtainClasses() {
+      // define component specific classes
+      const defaultClasses = {
+        rootContainer: "_root-container",
+        filterContainer: "_filter-container",
+        search: "_search",
+        tableContainer: "_datatable-container",
+        table: "_datatable",
+        thead: "",
+        tbody: "",
+        tr: "",
+        th: "_datatable__th",
+        td: "_datatable__td",
+        sort: "_icon",
+        sortIconSort: "_icon__sort",
+        sortIconAsc: "_icon__sort-asc",
+        sortIconDesc: "_icon__sort-desc",
+        rowDetailBtn: "_icon _row-toggle",
+        rowDetailBtnIconOpen: "_icon__add-circle",
+        rowDetailBtnIconClose: "_icon__remove-circle",
+        rowDetailTd: "_datatable__td--no-padding"
+      }
+
+      return Object.assign(defaultClasses, this.dtClasses);
     }
   }
 };
@@ -305,72 +344,69 @@ export default {
 <style src="../assets/style/font-icon.css" scoped></style>
 
 <style scoped>
-.root-container {
+._root-container {
   max-width: 960px;
   margin: 0 auto;
 }
 
-.datatable-container {margin: 16px 0;}
+._filter-container {
+  display: flex;
+  align-items: center;
+}
 
-.datatable {
-  table-layout: fixed;
-  border: 1px solid #39f;
+._search {
+  padding: 8px 12px;
+  border: 1px solid #bbb;
+  outline: none;
+  margin-left: auto;
+}
+
+._datatable-container {margin: 16px 0;}
+
+._datatable {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  border-radius: 5px;
 }
 
-.datatable__th {
+._datatable__th {
   text-align: left;
   text-transform: capitalize;
-  padding: 8px 12px;
-  background: #39f;
-  color: #fff;
+  padding: 4px 8px;
   user-select: none;
+  border: 1px solid #bbb;
 }
 
-.datatable__td {
-  padding: 16px 12px;
+._datatable__td {
+  padding: 4px 8px;
+  border: 1px solid #bbb;
 }
 
-.datatable__td--no-padding {
-  padding: 0;
-}
+._datatable__td--no-padding {padding: 0;}
 
-.datatable__th--sort {cursor: pointer;}
+._datatable__th--sort {cursor: pointer;}
 
-.sort-wrapper {
+._sort-icon-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.icon__sort {color: #bbb;}
+._icon__sort {color: #bbb;}
 
-.row-toggle {
+._icon__sort-asc,
+._icon__sort-desc {color: #2c3e50;}
+
+._row-toggle {
   cursor: pointer;
   font-size: 24px;
-  color: #29f;
 }
 
-.row-toggle--close {
-  color: tomato;
-}
+._icon__add-circle {color: #9595f7;}
 
-.row-detail {display: none;}
+._icon__remove-circle {color: #f79595;}
 
-.row-detail--show {display: table-row;}
+._row-detail {display: none;}
 
-.filter {
-  display: flex;
-  align-items: center;
-}
-
-.search {
-  padding: 8px 12px;
-  border: 1px solid #39f;
-  outline: none;
-  margin-left: auto;
-}
+._row-detail--show {display: table-row;}
 </style>
