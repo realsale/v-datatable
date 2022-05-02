@@ -121,6 +121,10 @@ export default {
     dtClasses: {
       type: Object,
       default: () => ({})
+    },
+    mergeDefault: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -284,9 +288,7 @@ export default {
       return this.sortDirs.length;
     },
     sortedData() {
-      if (
-        !this.sortBy.field ||
-        this.sortBy.dir === "none")
+      if (!this.sortBy.field || this.sortBy.dir === "none")
         return this.filteredData;
 
       const typeFn = this.sortTypeFunction(this.sortBy.type);
@@ -335,7 +337,10 @@ export default {
         rowDetailTd: "_datatable__td--no-padding"
       }
 
-      return Object.assign(defaultClasses, this.dtClasses);
+      if (this.mergeDefault)
+        return Object.assign(defaultClasses, this.dtClasses);
+      return Object.keys(this.dtClasses).length ?
+        this.dtClasses : defaultClasses;
     }
   }
 };
