@@ -2,6 +2,7 @@
   <div :class="obtainClasses.rootContainer">
     <div :class="obtainClasses.filterContainer">
       <input
+        v-if="searchableFields.length"
         :class="obtainClasses.search"
         type="text"
         placeholder="Search"
@@ -78,8 +79,11 @@
     </div>
 
     <DataTablePagination
+      v-if="pagination.enabled"
       :total="filteredData.length"
-      v-bind="pagination"
+      :initialPage="pagination.initialPage"
+      :perPageOptions="pagination.perPageOptions"
+      :perPage="pagination.perPage"
       @initial-state="initialState"
       @on-page-change="pageChange"
       @on-page-option-change="perPageChange"
@@ -117,7 +121,6 @@ export default {
       type: Boolean,
       default: false
     },
-    pagination: Object,
     dtClasses: {
       type: Object,
       default: () => ({})
@@ -125,6 +128,10 @@ export default {
     mergeDefault: {
       type: Boolean,
       default: true
+    },
+    pagination: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -133,7 +140,7 @@ export default {
       searchKey: "",
       sortBy: this.initializeSortBy(),
       page: 1,
-      activePerPage: 10
+      activePerPage: this.data.length
     };
   },
   methods: {
