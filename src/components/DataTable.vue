@@ -74,6 +74,15 @@
               </td>
             </tr>
           </template>
+
+          <tr v-show="!limitData.length" :class="obtainClasses.tr">
+            <td
+              :class="[obtainClasses.td, obtainClasses.noRecordTd]"
+              :colspan="rowDetail ? fields.length + 1: fields.length"
+            >
+              {{ noRecordMessage }}
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -128,6 +137,10 @@ export default {
     mergeDefault: {
       type: Boolean,
       default: true
+    },
+    noRecordMessage: {
+      type: String,
+      default: "No records to show"
     },
     pagination: {
       type: Object,
@@ -341,7 +354,8 @@ export default {
         rowDetailBtn: "_icon _row-toggle",
         rowDetailBtnIconOpen: "_icon__add-circle",
         rowDetailBtnIconClose: "_icon__remove-circle",
-        rowDetailTd: "_datatable__td--no-padding"
+        rowDetailTd: "_datatable__td--no-padding",
+        noRecordTd: "_datatable__td--text-center"
       }
 
       if (this.mergeDefault)
@@ -384,17 +398,19 @@ export default {
 ._datatable__th {
   text-align: left;
   text-transform: capitalize;
-  padding: 4px 8px;
+  padding: 8px 10px;
   user-select: none;
   border: 1px solid #bbb;
 }
 
 ._datatable__td {
-  padding: 4px 8px;
+  padding: 8px 10px;
   border: 1px solid #bbb;
 }
 
 ._datatable__td--no-padding {padding: 0;}
+
+._datatable__td--text-center {text-align: center;}
 
 ._datatable__th--sort {cursor: pointer;}
 
