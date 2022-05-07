@@ -68,7 +68,7 @@
             >
               <td
                 :class="[obtainClasses.td, obtainClasses.rowDetailTd]"
-                :colspan="fields.length + 1"
+                :colspan="colspanFullWidth"
               >
                 <slot name="row-detail" v-bind:row="d"></slot>
               </td>
@@ -78,7 +78,7 @@
           <tr v-show="!limitData.length" :class="obtainClasses.tr">
             <td
               :class="[obtainClasses.td, obtainClasses.noRecordTd]"
-              :colspan="rowDetail ? fields.length + 1: fields.length"
+              :colspan="colspanFullWidth"
             >
               {{ noRecordMessage }}
             </td>
@@ -362,6 +362,10 @@ export default {
         return Object.assign(defaultClasses, this.dtClasses);
       return Object.keys(this.dtClasses).length ?
         this.dtClasses : defaultClasses;
+    },
+    colspanFullWidth() {
+      if (this.rowDetail) return this.fields.length + 1;
+      return this.fields.length;
     }
   }
 };
