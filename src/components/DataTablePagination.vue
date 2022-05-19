@@ -162,6 +162,7 @@ export default {
   },
   computed: {
     recordStart() {
+      if (!this.total) return 0;
       return (this.page - 1) * this.selectedPerPage + 1;
     },
     recordShow() {
