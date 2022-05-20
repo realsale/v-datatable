@@ -151,13 +151,21 @@ export default {
       default: () => ({})
     }
   },
+  created() {
+    /**
+     * conditionally watch data prop length if pagination disabled, assign data
+     * length as active per page in order for limit data computed prop to work
+     */
+    if (this.pagination.enabled) return;
+    this.$watch("data.length", newData => this.activePerPage = newData);
+  },
   data() {
     return {
       fields: this.columns.map(c => c.field),
       searchKey: "",
       sortBy: this.initializeSortBy(),
       page: 1,
-      activePerPage: this.data.length
+      activePerPage: 10
     };
   },
   methods: {
