@@ -52,7 +52,11 @@
                 </span>
               </td>
 
-              <td :class="obtainClasses.td" v-for="f in fields" :key="d[f]">
+              <td
+                :class="obtainClasses.td"
+                v-for="f in fields"
+                :key="f.concat(d[f])"
+              >
                 <slot :name="`field.${f}`" v-bind:record="d">
                   {{ getProp(d, f) }}
                 </slot>
