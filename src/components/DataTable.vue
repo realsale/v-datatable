@@ -68,7 +68,7 @@
               :key="`${JSON.stringify(d)}-dropdown`"
               :ref="`tr${i}`"
               :class="obtainClasses.tr"
-              class="row-detail"
+              class="_row-detail"
             >
               <td
                 :class="[obtainClasses.td, obtainClasses.rowDetailTd]"
@@ -257,7 +257,7 @@ export default {
       btn.classList.toggle(openClass);
       btn.classList.toggle(closeClass);
 
-      tr.classList.toggle("row-detail--show");
+      tr.classList.toggle("_row-detail--show");
     },
     pageChange(n) {
       this.page = n;
