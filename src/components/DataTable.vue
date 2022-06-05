@@ -14,6 +14,16 @@
       <table :class="obtainClasses.table">
         <thead :class="obtainClasses.thead">
           <tr :class="obtainClasses.tr">
+            <th v-if="rowSelect" :class="obtainClasses.th">
+              <input
+                :class="obtainClasses.rowSelectAll"
+                ref="selectAll"
+                type="checkbox"
+                @change="selectAll"
+                :checked="isAllRowSelected"
+              />
+            </th>
+
             <th v-if="rowDetail" :class="obtainClasses.th"></th>
 
             <th
@@ -41,6 +51,15 @@
         <tbody :class="obtainClasses.tbody">
           <template v-for="(d, i) in limitData">
             <tr :class="obtainClasses.tr" :key="JSON.stringify(d)">
+              <td v-if="rowSelect" :class="obtainClasses.td">
+                <input
+                  :class="obtainClasses.rowSelect"
+                  type="checkbox"
+                  :checked="d.isSelected"
+                  @change="select(d)"
+                />
+              </td>
+
               <td v-if="rowDetail" :class="obtainClasses.td">
                 <span
                   :ref="`btn${i}`"
@@ -130,6 +149,10 @@ export default {
       type: Boolean,
       default: false
     },
+    rowSelect: {
+      type: Boolean,
+      default: false
+    },
     rowDetail: {
       type: Boolean,
       default: false
@@ -158,6 +181,14 @@ export default {
      */
     if (this.pagination.enabled) return;
     this.$watch("data.length", newData => this.activePerPage = newData);
+  },
+  watch: {
+    data: {
+      handler() {
+        this.$refs.selectAll.indeterminate = this.hasSelectedRow;
+      },
+      deep: true
+    }
   },
   data() {
     return {
@@ -259,6 +290,18 @@ export default {
 
       tr.classList.toggle("_row-detail--show");
     },
+    select(d) {
+      this.$set(d, 'isSelected', !d.isSelected);
+
+      this.$emit("on-select", d, d.isSelected);
+    },
+    selectAll(e) {
+      this.filteredData.forEach(d => {
+        this.$set(d, 'isSelected', e.target.checked);
+      });
+
+      this.$emit("on-select-all", this.selectedRow);
+    },
     pageChange(n) {
       this.page = n;
       this.$emit("on-page-change", n);
@@ -346,6 +389,17 @@ export default {
         this.activePerPage * this.page
       );
     },
+    selectedRow() {
+      return this.data.filter(d => d.isSelected);
+    },
+    selectedRowCount() {return this.selectedRow.length;},
+    isAllRowSelected() {
+      return this.selectedRowCount == this.data.length &&
+        this.selectedRowCount != 0;
+    },
+    hasSelectedRow() {
+      return this.data.some(d => d.isSelected) && !this.isAllRowSelected;
+    },
     obtainClasses() {
       // define component specific classes
       const defaultClasses = {
@@ -363,6 +417,8 @@ export default {
         sortIconSort: "_icon__sort",
         sortIconAsc: "_icon__sort-asc",
         sortIconDesc: "_icon__sort-desc",
+        rowSelect: "",
+        rowSelectAll: "",
         rowDetailBtn: "_icon _row-toggle",
         rowDetailBtnIconOpen: "_icon__add-circle",
         rowDetailBtnIconClose: "_icon__remove-circle",
@@ -376,8 +432,12 @@ export default {
         this.dtClasses : defaultClasses;
     },
     colspanFullWidth() {
-      if (this.rowDetail) return this.fields.length + 1;
-      return this.fields.length;
+      let i = 0;
+
+      if (this.rowSelect) ++i;
+      if (this.rowDetail) ++i;
+
+      return this.fields.length + i;
     }
   }
 };
