@@ -49,7 +49,7 @@
         </thead>
 
         <tbody :class="obtainClasses.tbody">
-          <template v-for="(d, i) in limitData">
+          <template v-for="d in limitData">
             <tr :class="obtainClasses.tr" :key="JSON.stringify(d)">
               <td v-if="rowSelect" :class="obtainClasses.td">
                 <input
@@ -62,11 +62,11 @@
 
               <td v-if="rowDetail" :class="obtainClasses.td">
                 <span
-                  :ref="`btn${i}`"
-                  @click="toggleRowDetail(i)"
+                  @click="toggleRowDetail(d)"
                   :class="[
                     obtainClasses.rowDetailBtn,
-                    obtainClasses.rowDetailBtnIconOpen
+                    {[obtainClasses.rowDetailBtnIconOpen]: !d.isRowDetailOpen},
+                    {[obtainClasses.rowDetailBtnIconClose]: d.isRowDetailOpen},
                   ]">
                 </span>
               </td>
@@ -84,10 +84,9 @@
 
             <tr
               v-if="rowDetail"
+              v-show="d.isRowDetailOpen"
               :key="`${JSON.stringify(d)}-dropdown`"
-              :ref="`tr${i}`"
               :class="obtainClasses.tr"
-              class="_row-detail"
             >
               <td
                 :class="[obtainClasses.td, obtainClasses.rowDetailTd]"
@@ -274,21 +273,10 @@ export default {
         return (a, b) => a.toLowerCase() <= b.toLowerCase() ? -1 : 1;
       }
     },
-    toggleRowDetail(i) {
-      const btn = this.$refs[`btn${i}`][0];
-      const tr = this.$refs[`tr${i}`][0];
-      const openClass = this.obtainClasses.rowDetailBtnIconOpen;
-      const closeClass = this.obtainClasses.rowDetailBtnIconClose;
+    toggleRowDetail(d) {
+      this.$set(d, 'isRowDetailOpen', !d.isRowDetailOpen);
 
-      /**
-       * icon change class
-       * replacing class, should only one class can be present at a time
-       * e.g. font-icons that has a dedicated class name for each single icon
-       */
-      btn.classList.toggle(openClass);
-      btn.classList.toggle(closeClass);
-
-      tr.classList.toggle("_row-detail--show");
+      this.$emit("on-row-detail", d, d.isRowDetailOpen);
     },
     select(d) {
       this.$set(d, 'isSelected', !d.isSelected);
@@ -509,8 +497,4 @@ export default {
 ._icon__add-circle {color: #9595f7;}
 
 ._icon__remove-circle {color: #f79595;}
-
-._row-detail {display: none;}
-
-._row-detail--show {display: table-row;}
 </style>
