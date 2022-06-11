@@ -65,8 +65,14 @@
                   @click="toggleRowDetail(d)"
                   :class="[
                     obtainClasses.rowDetailBtn,
-                    {[obtainClasses.rowDetailBtnIconOpen]: !d.isRowDetailOpen},
-                    {[obtainClasses.rowDetailBtnIconClose]: d.isRowDetailOpen},
+                    {
+                      [obtainClasses.rowDetailBtnIconOpen || '']:
+                        !d.isRowDetailOpen
+                    },
+                    {
+                      [obtainClasses.rowDetailBtnIconClose || '']:
+                        d.isRowDetailOpen
+                    }
                   ]">
                 </span>
               </td>
@@ -250,10 +256,10 @@ export default {
       return [
         this.obtainClasses.sort,
         {
-          [this.obtainClasses.sortIconSort]:
+          [this.obtainClasses.sortIconSort || ""]:
             (!isSameField && sortable) || (sortable && !isAsc && !isDesc),
-          [this.obtainClasses.sortIconAsc]: isSameField && isAsc,
-          [this.obtainClasses.sortIconDesc]: isSameField && isDesc
+          [this.obtainClasses.sortIconAsc || ""]: isSameField && isAsc,
+          [this.obtainClasses.sortIconDesc || ""]: isSameField && isDesc
         }
       ];
     },

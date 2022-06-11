@@ -47,7 +47,7 @@
         <a
           :class="[
             obtainClasses.pagingBtn,
-            {[obtainClasses.pagingBtnDisabled]: !hasPrev}
+            {[obtainClasses.pagingBtnDisabled || '']: !hasPrev}
           ]"
           @click="updatePage('prev')"
         >
@@ -59,8 +59,8 @@
         <a
           :class="[
             obtainClasses.pagingBtn,
-            {[obtainClasses.pagingBtnActive]: page === p},
-            {[obtainClasses.pagingBtnDisabled]: p === '...'}
+            {[obtainClasses.pagingBtnActive || '']: page === p},
+            {[obtainClasses.pagingBtnDisabled || '']: p === '...'}
           ]"
           @click="updatePage('jump', p)"
         >
@@ -72,7 +72,7 @@
         <a
           :class="[
             obtainClasses.pagingBtn,
-            {[obtainClasses.pagingBtnDisabled]: !hasNext}
+            {[obtainClasses.pagingBtnDisabled || '']: !hasNext}
           ]"
           @click="updatePage('next')"
         >
