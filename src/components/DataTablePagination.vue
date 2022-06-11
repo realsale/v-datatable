@@ -1,64 +1,81 @@
 <template>
-  <div class="pagination-container">
-    <div>
-      <label for="per-page">Show: &nbsp;</label>
+  <div :class="obtainClasses.rootContainer">
+    <div :class="obtainClasses.perPage">
+      <label
+        :class="obtainClasses.perPageLabel"
+        for="per-page"
+      >
+        Show: &nbsp;
+      </label>
+
       <select
         id="per-page"
-        class="per-page"
-        @change="selectPageOption($event.target.value)">
+        :class="obtainClasses.perPageSelect"
+        @change="selectPageOption($event.target.value)"
+      >
         <option v-for="p in perPageOptions" :key="p">{{ p }}</option>
       </select>
     </div>
 
-    <p class="page-details">
-      {{ recordStart }} - {{ recordShow }} of {{ total }}
-    </p>
-
-    <div class="page-goto">
+    <div :class="obtainClasses.pageGoto">
       <input
         type="number"
-        class="page-goto__input"
+        :class="obtainClasses.pageGotoInput"
         size="3"
         v-model.number="goto"
         :min="1"
         :max="lastPage"
         :placeholder="page"
-        @keyup.enter="updatePage('goto')" />
+        @keyup.enter="updatePage('goto')"
+      />
+
       <button
         type="button"
-        class="page-goto__button"
-        @click="updatePage('goto')">
+        :class="obtainClasses.pageGotoBtn"
+        @click="updatePage('goto')"
+      >
         Go
       </button>
     </div>
 
-    <ul class="pagination">
+    <p :class="obtainClasses.pageDetails">
+      {{ recordStart }} - {{ recordShow }} of {{ total }}
+    </p>
+
+    <ul :class="obtainClasses.paging">
       <li>
         <a
-          class="pag-btn"
-          :class="{'pag-btn--disabled': !hasPrev}"
-          @click="updatePage('prev')">
-          Previous
+          :class="[
+            obtainClasses.pagingBtn,
+            {[obtainClasses.pagingBtnDisabled]: !hasPrev}
+          ]"
+          @click="updatePage('prev')"
+        >
+          Prev
         </a>
       </li>
 
       <li v-for="(p, i) in pages" :key="i.toString().concat(p)">
         <a
-          class="pag-btn"
-          :class="{
-            'pag-btn--active': page === p,
-            'pag-btn--disabled': p === '...'
-          }"
-          @click="updatePage('jump', p)">
+          :class="[
+            obtainClasses.pagingBtn,
+            {[obtainClasses.pagingBtnActive]: page === p},
+            {[obtainClasses.pagingBtnDisabled]: p === '...'}
+          ]"
+          @click="updatePage('jump', p)"
+        >
           {{ p }}
         </a>
       </li>
 
       <li>
         <a
-          class="pag-btn"
-          :class="{'pag-btn--disabled': !hasNext}"
-          @click="updatePage('next')">
+          :class="[
+            obtainClasses.pagingBtn,
+            {[obtainClasses.pagingBtnDisabled]: !hasNext}
+          ]"
+          @click="updatePage('next')"
+        >
           Next
         </a>
       </li>
@@ -92,6 +109,14 @@ export default {
       default() {
         return this.perPageOptions[0] || 10;
       }
+    },
+    pagClasses: {
+      type: Object,
+      default: () => ({})
+    },
+    mergeDefault: {
+      type: Boolean,
+      default: true
     }
   },
   created() {
@@ -237,33 +262,59 @@ export default {
     hasNext() {
       if (this.page >= this.lastPage) return false;
       return true;
+    },
+    obtainClasses() {
+      // define component specific classes
+      const defaultClasses = {
+        rootContainer: "_root-container",
+        perPage: "_per-page",
+        perPageLabel: "",
+        perPageSelect: "_per-page__select",
+        pageDetails: "_page-details",
+        pageGoto: "_page-goto",
+        pageGotoInput: "_page-goto__input",
+        pageGotoBtn: "_page-goto__btn",
+        paging: "_paging",
+        pagingBtn: "_paging__btn",
+        pagingBtnActive: "_paging__btn--active",
+        pagingBtnDisabled: "_paging__btn--disabled"
+      }
+
+      if (this.mergeDefault)
+        return Object.assign(defaultClasses, this.pagClasses);
+      return Object.keys(this.pagClasses).length ?
+        this.pagClasses : defaultClasses;
     }
   }
 };
 </script>
 
 <style scoped>
-.pagination-container {
+._root-container {
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
   font-size: 14px;
   user-select: none;
 }
 
-.per-page {
+._per-page__select {
   border: 1px solid #39f;
   border-radius: 4px;
   background: #fff;
   padding: 8px 12px;
 }
 
-.page-details {
+._page-details {
   margin-left: 16px;
 }
 
-.page-goto {margin-left: 16px;}
 
-.page-goto__input {
+._page-goto {margin-left: 16px;}
+
+._page-goto__input {
   border: 1px solid #39f;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
@@ -271,17 +322,17 @@ export default {
   outline: none;
 }
 
-.page-goto__input::-webkit-outer-spin-button,
-.page-goto__input::-webkit-inner-spin-button {
+._page-goto__input::-webkit-outer-spin-button,
+._page-goto__input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.page-goto__input {
+._page-goto__input {
   -moz-appearance: textfield;
 }
 
-.page-goto__button {
+._page-goto__btn {
   padding: 8px 12px;
   border: 1px solid #39f;
   border-top-right-radius: 4px;
@@ -291,15 +342,14 @@ export default {
   cursor: pointer;
 }
 
-.pagination {
+._paging {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  margin-left: auto;
 }
 
-.pag-btn {
+._paging__btn {
   display: inline-block;
   border-radius: 4px;
   padding: 8px 12px;
@@ -308,22 +358,35 @@ export default {
   cursor: pointer;
 }
 
-.pag-btn:hover:not(.pag-btn--active):not(.pag-btn--disabled) {
+._paging__btn:hover:not(._paging__btn--active):not(._paging__btn--disabled) {
   background: #eaeaea;
 }
 
-.pag-btn--active,
-.pag-btn--disabled {
+._paging__btn--active,
+._paging__btn--disabled {
   pointer-events: none;
   cursor: default;
 }
 
-.pag-btn--active {
+._paging__btn--active {
   background: #39f;
   color: #fff;
 }
 
-.pag-btn--disabled {
+._paging__btn--disabled {
   color: #ddd;
+}
+
+._per-page,
+._page-details,
+._page-goto,
+._paging {
+  margin-top: 16px;
+}
+
+@media only screen and (min-width: 650px) {
+  ._root-container {
+    justify-content: flex-end;
+  }
 }
 </style>

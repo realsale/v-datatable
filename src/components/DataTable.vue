@@ -115,6 +115,8 @@
       :initialPage="pagination.initialPage"
       :perPageOptions="pagination.perPageOptions"
       :perPage="pagination.perPage"
+      :pagClasses="pagClasses"
+      :mergeDefault="mergeDefault"
       @initial-state="initialState"
       @on-page-change="pageChange"
       @on-page-option-change="perPageChange"
@@ -169,6 +171,10 @@ export default {
       default: "No records to show"
     },
     pagination: {
+      type: Object,
+      default: () => ({})
+    },
+    pagClasses: {
       type: Object,
       default: () => ({})
     }
