@@ -121,6 +121,7 @@
       :initialPage="pagination.initialPage"
       :perPageOptions="pagination.perPageOptions"
       :perPage="pagination.perPage"
+      :pageGoto="pagination.pageGoto"
       :pagClasses="pagClasses"
       :mergeDefault="mergeDefault"
       @initial-state="initialState"

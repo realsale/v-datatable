@@ -17,7 +17,7 @@
       </select>
     </div>
 
-    <div :class="obtainClasses.pageGoto">
+    <div v-if="pageGoto" :class="obtainClasses.pageGoto">
       <input
         type="number"
         :class="obtainClasses.pageGotoInput"
@@ -109,6 +109,10 @@ export default {
       default() {
         return this.perPageOptions[0] || 10;
       }
+    },
+    pageGoto: {
+      type: Boolean,
+      default: false
     },
     pagClasses: {
       type: Object,
@@ -311,7 +315,6 @@ export default {
   margin-left: 16px;
 }
 
-
 ._page-goto {margin-left: 16px;}
 
 ._page-goto__input {
@@ -347,6 +350,7 @@ export default {
   margin: 0;
   padding: 0;
   display: flex;
+  margin-left: 16px;
 }
 
 ._paging__btn {
