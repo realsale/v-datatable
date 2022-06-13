@@ -337,11 +337,12 @@ export default {
       if (!this.searchableFields.length || !this.searchKey)
         return this.formattedData;
 
-      const searchPattern = new RegExp(this.searchKey, "i");
+      let patt = String.raw`${this.searchKey}`.replace(/\\/g, "\\\\");
+      patt = new RegExp(patt, "i");
 
       const filtered = this.formattedData.filter(d => {
         return this.searchableFields.find(sf => {
-          return d[sf].toString().search(searchPattern) < 0 ? false : true;
+          return d[sf].toString().search(patt) < 0 ? false : true;
         });
       });
 
