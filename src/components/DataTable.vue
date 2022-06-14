@@ -117,7 +117,8 @@
 
     <DataTablePagination
       v-if="pagination.enabled"
-      :total="filteredData.length"
+      :total="data.length"
+      :filteredTotal="filteredData.length"
       :initialPage="pagination.initialPage"
       :perPageOptions="pagination.perPageOptions"
       :perPage="pagination.perPage"

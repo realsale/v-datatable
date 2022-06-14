@@ -39,7 +39,8 @@
     </div>
 
     <p :class="obtainClasses.pageDetails">
-      {{ recordStart }} - {{ recordShow }} of {{ total }}
+      {{ recordStart }} - {{ recordShow }} of {{ recordTotal }}
+      {{ filteredMessage }}
     </p>
 
     <ul :class="obtainClasses.paging">
@@ -91,6 +92,7 @@ export default {
       type: Number,
       required: true
     },
+    filteredTotal: Number,
     initialPage: {
       type: Number,
       default: 1
@@ -131,9 +133,8 @@ export default {
     });
   },
   watch: {
-    total() {
-      this.updatePage();
-    }
+    total: "updatePage",
+    filteredTotal: "updatePage"
   },
   data() {
     return {
@@ -190,17 +191,32 @@ export default {
     }
   },
   computed: {
+    isFiltered() {
+      if (
+        this.filteredTotal &&
+        this.filteredTotal < this.total ||
+        this.filteredTotal == 0) return true;
+      return false;
+    },
+    recordTotal() {
+      if (this.isFiltered) return this.filteredTotal;
+      return this.total;
+    },
+    filteredMessage() {
+      if (this.isFiltered) return `(filtered from ${this.total} rows)`;
+      return "";
+    },
     recordStart() {
-      if (!this.total) return 0;
+      if (!this.recordTotal) return 0;
       return (this.page - 1) * this.selectedPerPage + 1;
     },
     recordShow() {
-      if (this.total < this.page * this.selectedPerPage)
-        return this.total;
+      if (this.recordTotal < this.page * this.selectedPerPage)
+        return this.recordTotal;
       return this.page * this.selectedPerPage;
     },
     lastPage() {
-      return Math.ceil(this.total / this.selectedPerPage);
+      return Math.ceil(this.recordTotal / this.selectedPerPage);
     },
     pages() {
       /**
