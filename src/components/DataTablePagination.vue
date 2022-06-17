@@ -92,7 +92,15 @@ export default {
       type: Number,
       required: true
     },
-    filteredTotal: Number,
+    filteredOption: {
+      type: Object,
+      default() {
+        return {
+          isFiltered: false,
+          filteredTotal: 0
+        }
+      }
+    },
     initialPage: {
       type: Number,
       default: 1
@@ -134,7 +142,11 @@ export default {
   },
   watch: {
     total: "updatePage",
-    filteredTotal: "updatePage"
+    filteredOption(n, o) {
+      if (n.isFiltered && n.filteredTotal != o.filteredTotal) {
+        this.updatePage();
+      }
+    }
   },
   data() {
     return {
@@ -191,19 +203,14 @@ export default {
     }
   },
   computed: {
-    isFiltered() {
-      if (
-        this.filteredTotal &&
-        this.filteredTotal < this.total ||
-        this.filteredTotal == 0) return true;
-      return false;
-    },
     recordTotal() {
-      if (this.isFiltered) return this.filteredTotal;
+      const { isFiltered, filteredTotal } = this.filteredOption;
+      if (isFiltered) return filteredTotal;
       return this.total;
     },
     filteredMessage() {
-      if (this.isFiltered) return `(filtered from ${this.total} rows)`;
+      if (this.filteredOption.isFiltered)
+        return `(filtered from ${this.total} rows)`;
       return "";
     },
     recordStart() {

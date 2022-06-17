@@ -118,7 +118,7 @@
     <DataTablePagination
       v-if="pagination.enabled"
       :total="data.length"
-      :filteredTotal="filteredData.length"
+      :filteredOption="filteredOption"
       :initialPage="pagination.initialPage"
       :perPageOptions="pagination.perPageOptions"
       :perPage="pagination.perPage"
@@ -277,6 +277,8 @@ export default {
         this.sortBy.dir = this.sortDirs[0];
       }
       this.sortBy.type = type || "";
+
+      this.$emit("on-sort", this.sortBy.field, this.sortBy.dir);
     },
     sortTypeFunction(type) {
       if (type === "number") {
@@ -290,7 +292,7 @@ export default {
     toggleRowDetail(d) {
       this.$set(d, 'isRowDetailOpen', !d.isRowDetailOpen);
 
-      this.$emit("on-row-detail", d, d.isRowDetailOpen);
+      this.$emit("on-row-detail-change", d, d.isRowDetailOpen);
     },
     select(d) {
       this.$set(d, 'isSelected', !d.isSelected);
@@ -298,7 +300,7 @@ export default {
       this.$emit("on-select", d, d.isSelected);
     },
     selectAll(e) {
-      this.filteredData.forEach(d => {
+      this.formattedData.forEach(d => {
         this.$set(d, 'isSelected', e.target.checked);
       });
 
@@ -335,8 +337,7 @@ export default {
       return this.columns.filter(c => c.searchable).map(c => c.field);
     },
     filteredData() {
-      if (!this.searchableFields.length || !this.searchKey)
-        return this.formattedData;
+      if (!this.searchableFields.length || !this.searchKey) return [];
 
       let patt = String.raw`${this.searchKey}`.replace(/\\/g, "\\\\");
       patt = new RegExp(patt, "i");
@@ -347,12 +348,20 @@ export default {
         });
       });
 
-      this.$emit("on-search", {
-        searchKey: this.searchKey,
-        rowCount: filtered.length
-      });
+      this.$emit("on-search", this.searchKey, filtered.length);
 
       return filtered;
+    },
+    isFiltered() {
+      return !!(this.searchKey &&
+        this.filteredData.length < this.data.length &&
+        this.data.length);
+    },
+    filteredOption() {
+      return {
+        isFiltered: this.isFiltered,
+        filteredTotal: this.filteredData.length
+      };
     },
     sortDirs() {
       const sortDirs = ["asc", "desc"];
@@ -366,22 +375,25 @@ export default {
       return this.sortDirs.length;
     },
     sortedData() {
-      if (!this.sortBy.field || this.sortBy.dir === "none")
-        return this.filteredData;
+      let data = (this.isFiltered) ? this.filteredData : this.formattedData;
 
-      const typeFn = this.sortTypeFunction(this.sortBy.type);
+      if (this.sortBy.field && this.sortBy.dir != "none") {
+        const typeFn = this.sortTypeFunction(this.sortBy.type);
+  
+        data = data.slice(0).sort((itemA, itemB) => {
+          let a = itemA,
+            b = itemB;
+  
+          if (this.sortBy.dir === "desc") {
+            a = itemB;
+            b = itemA;
+          }
+  
+          return typeFn(a[this.sortBy.field], b[this.sortBy.field]);
+        });
+      }
 
-      return this.filteredData.slice(0).sort((itemA, itemB) => {
-        let a = itemA,
-          b = itemB;
-
-        if (this.sortBy.dir === "desc") {
-          a = itemB;
-          b = itemA;
-        }
-
-        return typeFn(a[this.sortBy.field], b[this.sortBy.field]);
-      });
+      return data;
     },
     recordStart() {
       return (this.page - 1) * this.activePerPage;
