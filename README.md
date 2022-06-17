@@ -57,8 +57,6 @@ npm install v-datatable --save
 > };
 > </script>
 > ```
->
-> <br />
 
 ## Usage
 
@@ -96,6 +94,18 @@ npm install v-datatable --save
 | pagination.perPage        | Number                       | 10                 | number of row per page                                                                                                                                                                                                                                                                                                                                   |
 | pagination.pageGoto       | Boolean                      | false              | specify whether to show/hide pageGoto feature                                                                                                                                                                                                                                                                                                            |
 | pagination.pagClasses     | Object                       |                    | an object specifying a class names to be customized                                                                                                                                                                                                                                                                                                                                                         |
+
+## Events
+
+| Name                  | Data                 | Description                                     |
+| --------------------- | -------------------- | ----------------------------------------------- |
+| on-search             | searchKey, rowCount  | Fires when a search input value change          |
+| on-sort               | field, dir           | Fires when a sortable header toggle             |
+| on-select             | row, isSelected      | Fires when row checkbox value change            |
+| on-select-all         | rows                 | Fires when select all row checkbox value change |
+| on-row-detail-change  | row, isRowDetailOpen | Fires when row toggle button click              |
+| on-page-change        | pageNumber           | Fires when page change                          |
+| on-page-option-change | perPage              | Fires when per page dropdown change             |
 
 ## Project setup
 
