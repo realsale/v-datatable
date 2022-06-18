@@ -98,7 +98,11 @@
                 :class="[obtainClasses.td, obtainClasses.rowDetailTd]"
                 :colspan="colspanFullWidth"
               >
-                <slot name="row-detail" v-bind:row="d"></slot>
+                <slot name="row-detail" v-bind:row="d">
+                  <p class="_datatable__td--text-center">
+                    Accordion content goes here.
+                  </p>
+                </slot>
               </td>
             </tr>
           </template>
