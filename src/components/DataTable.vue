@@ -521,7 +521,7 @@ export default {
   font-size: 24px;
 }
 
-._icon__add-circle {color: #9595f7;}
+._icon__add-circle {color: #39f;}
 
-._icon__remove-circle {color: #f79595;}
+._icon__remove-circle {color: tomato;}
 </style>
