@@ -82,7 +82,7 @@
                 v-for="f in fields"
                 :key="f.concat(d[f])"
               >
-                <slot :name="`field.${f}`" v-bind:record="d">
+                <slot :name="`field.${f}`" v-bind:row="d">
                   {{ getProp(d, f) }}
                 </slot>
               </td>
