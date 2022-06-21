@@ -196,15 +196,19 @@ export default {
      * conditionally watch data prop length if pagination disabled, assign data
      * length as active per page in order for limit data computed prop to work
      */
-    if (this.pagination.enabled) return;
-    this.$watch("data.length", newData => this.activePerPage = newData);
-  },
-  watch: {
-    data: {
-      handler() {
-        this.$refs.selectAll.indeterminate = this.hasSelectedRow;
-      },
-      deep: true
+    if (!this.pagination.enabled) {
+      this.$watch("data.length", newData => this.activePerPage = newData);
+    }
+
+    // watch data prop if row select is enabled for select all indeterminate
+    if (this.rowSelect) {
+      this.$watch(
+        "data",
+        () => {
+          this.$refs.selectAll.indeterminate = this.hasSelectedRow;
+        },
+        {deep: true}
+      );
     }
   },
   data() {
@@ -465,6 +469,8 @@ export default {
 <style src="../assets/style/font-icon.css" scoped></style>
 
 <style scoped>
+* {box-sizing: border-box;}
+
 ._root-container {
   max-width: 960px;
   margin: 0 auto;
