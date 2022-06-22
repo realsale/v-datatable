@@ -121,7 +121,7 @@
 
     <DataTablePagination
       v-if="pagination.enabled"
-      :total="data.length"
+      :total="processedData.length"
       :filteredOption="filteredOption"
       :initialPage="pagination.initialPage"
       :perPageOptions="pagination.perPageOptions"
@@ -192,27 +192,37 @@ export default {
     }
   },
   created() {
+    // initialize processed data every time data prop changes
+    this.$watch(
+      "data",
+      () => this.initializeProcessedData(),
+      {deep: true, immediate: true}
+    );
+
     /**
-     * conditionally watch data prop length if pagination disabled, assign data
-     * length as active per page in order for limit data computed prop to work
+     * conditionally watch processed data prop length if pagination disabled,
+     * assign data length as active per page in order for limit data computed
+     * prop to work
      */
     if (!this.pagination.enabled) {
-      this.$watch("data.length", newData => this.activePerPage = newData);
+      this.$watch(
+        "processedData.length",
+        newData => this.activePerPage = newData
+      );
     }
 
-    // watch data prop if row select is enabled for select all indeterminate
+    // watch processed data if row select enabled for select-all indeterminate
     if (this.rowSelect) {
       this.$watch(
-        "data",
-        () => {
-          this.$refs.selectAll.indeterminate = this.hasSelectedRow;
-        },
+        "processedData",
+        () => this.$refs.selectAll.indeterminate = this.hasSelectedRow,
         {deep: true}
       );
     }
   },
   data() {
     return {
+      processedData: [],
       fields: this.columns.map(c => c.field),
       searchKey: "",
       sortBy: this.initializeSortBy(),
@@ -221,6 +231,13 @@ export default {
     };
   },
   methods: {
+    initializeProcessedData() {
+      const data = JSON.parse(JSON.stringify(this.data));
+
+      this.processedData = data.map((d, i) => {
+        return { vdtIndex: i++, ...d };
+      });
+    },
     initializeSortBy() {
       let column, field = "", dir = "none", type = "";
 
@@ -299,6 +316,8 @@ export default {
     },
     toggleRowDetail(d) {
       this.$set(d, 'isRowDetailOpen', !d.isRowDetailOpen);
+      // const updatedRow = Object.assign(d, {isRowDetailOpen: !d.isRowDetailOpen});
+      // this.processedData.splice(d.vdtIndex, 1, updatedRow);
 
       this.$emit("on-row-detail-change", d, d.isRowDetailOpen);
     },
@@ -308,7 +327,7 @@ export default {
       this.$emit("on-select", d, d.isSelected);
     },
     selectAll(e) {
-      this.formattedData.forEach(d => {
+      this.processedData.forEach(d => {
         this.$set(d, 'isSelected', e.target.checked);
       });
 
@@ -331,7 +350,7 @@ export default {
         });
 
       if (formatableFields.length) {
-        return this.data.map(d => {
+        return this.processedData.map(d => {
           formatableFields.forEach(f => {
             d[f.field] = f.format(d[f.field]);
           });
@@ -339,7 +358,7 @@ export default {
           return d;
         });
       }
-      return this.data;
+      return this.processedData;
     },
     searchableFields() {
       return this.columns.filter(c => c.searchable).map(c => c.field);
@@ -362,8 +381,8 @@ export default {
     },
     isFiltered() {
       return !!(this.searchKey &&
-        this.filteredData.length < this.data.length &&
-        this.data.length);
+        this.filteredData.length < this.processedData.length &&
+        this.processedData.length);
     },
     filteredOption() {
       return {
@@ -413,15 +432,16 @@ export default {
       );
     },
     selectedRow() {
-      return this.data.filter(d => d.isSelected);
+      return this.processedData.filter(d => d.isSelected);
     },
     selectedRowCount() {return this.selectedRow.length;},
     isAllRowSelected() {
-      return this.selectedRowCount == this.data.length &&
+      return this.selectedRowCount == this.processedData.length &&
         this.selectedRowCount != 0;
     },
     hasSelectedRow() {
-      return this.data.some(d => d.isSelected) && !this.isAllRowSelected;
+      return this.processedData
+        .some(d => d.isSelected) && !this.isAllRowSelected;
     },
     obtainClasses() {
       // define component specific classes
