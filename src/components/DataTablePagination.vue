@@ -150,12 +150,21 @@ export default {
   },
   data() {
     return {
-      page: this.initialPage,
+      page: this.initializeInitialPage(),
       selectedPerPage: this.perPage,
       goto: ""
     };
   },
   methods: {
+    initializeInitialPage() {
+      // invalid initial page will fallback to 1
+      let page = this.initialPage;
+      const lastPage = Math.ceil(this.total / this.perPage);
+      const isInvalid = page < 1 || page > lastPage;
+
+      if (isInvalid) page = 1;
+      return page;
+    },
     updatePage(type, p) {
       switch (type) {
         case "prev":
@@ -317,6 +326,8 @@ export default {
 </script>
 
 <style scoped>
+* {box-sizing: border-box;}
+
 ._root-container {
   display: flex;
   flex-direction: row;
