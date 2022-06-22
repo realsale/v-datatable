@@ -50,7 +50,7 @@
 
         <tbody :class="obtainClasses.tbody">
           <template v-for="d in limitData">
-            <tr :class="obtainClasses.tr" :key="JSON.stringify(d)">
+            <tr :class="obtainClasses.tr" :key="d.vdtIndex">
               <td v-if="rowSelect" :class="obtainClasses.td">
                 <input
                   :class="obtainClasses.rowSelect"
@@ -80,7 +80,7 @@
               <td
                 :class="obtainClasses.td"
                 v-for="f in fields"
-                :key="f.concat(d[f])"
+                :key="`${d.vdtIndex}-${f}`"
               >
                 <slot :name="`field.${f}`" v-bind:row="d">
                   {{ getProp(d, f) }}
@@ -91,7 +91,7 @@
             <tr
               v-if="rowDetail"
               v-show="d.isRowDetailOpen"
-              :key="`${JSON.stringify(d)}-dropdown`"
+              :key="`${d.vdtIndex}-dropdown`"
               :class="obtainClasses.tr"
             >
               <td
