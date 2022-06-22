@@ -207,7 +207,8 @@ export default {
     if (!this.pagination.enabled) {
       this.$watch(
         "processedData.length",
-        newData => this.activePerPage = newData
+        newData => this.activePerPage = newData,
+        {immediate: true}
       );
     }
 
