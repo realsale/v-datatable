@@ -13,7 +13,13 @@
         :class="obtainClasses.perPageSelect"
         @change="selectPageOption($event.target.value)"
       >
-        <option v-for="p in perPageOptions" :key="p">{{ p }}</option>
+        <option
+          v-for="p in activePerPageOptions"
+          :key="p"
+          :selected="p == selectedPerPage"
+        >
+          {{ p }}
+        </option>
       </select>
     </div>
 
@@ -109,9 +115,6 @@ export default {
       type: Array,
       default() {
         return [10, 25, 50];
-      },
-      validator(value) {
-        return value.every(v => typeof v === "number");
       }
     },
     perPage: {
@@ -134,6 +137,8 @@ export default {
     }
   },
   created() {
+    this.initializePagination();
+
     // emits initial pagination states
     this.$emit("initial-state", {
       page: this.page,
@@ -141,29 +146,40 @@ export default {
     });
   },
   watch: {
-    total: "updatePage",
+    total(n, o) {
+      // go to previous page if page decreased
+      if (n < o && Number.isInteger(n / this.selectedPerPage)) {
+        this.updatePage("prev");
+      }
+    },
     filteredOption(n, o) {
-      if (n.isFiltered && n.filteredTotal != o.filteredTotal) {
+      if (n.isFiltered != o.isFiltered && n.filteredTotal != o.filteredTotal) {
         this.updatePage();
       }
     }
   },
   data() {
     return {
-      page: this.initializeInitialPage(),
-      selectedPerPage: this.perPage,
+      selectedPerPage: 10,
+      page: 1,
       goto: ""
     };
   },
   methods: {
-    initializeInitialPage() {
-      // invalid initial page will fallback to 1
+    initializePagination() {
+      let perPage = this.perPage;
       let page = this.initialPage;
-      const lastPage = Math.ceil(this.total / this.perPage);
-      const isInvalid = page < 1 || page > lastPage;
 
-      if (isInvalid) page = 1;
-      return page;
+      const isPerPageExist = this.activePerPageOptions.includes(perPage);
+      const isPerPageValid = perPage >= 1 && isPerPageExist;
+
+      if (!isPerPageValid) perPage = this.activePerPageOptions[0];
+      this.selectedPerPage = perPage;
+
+      const isPageValid = page >= 1 && page <= this.lastPage;
+
+      if (!isPageValid) page = 1;
+      this.page = page;
     },
     updatePage(type, p) {
       switch (type) {
@@ -212,6 +228,17 @@ export default {
     }
   },
   computed: {
+    activePerPageOptions() {
+      let perPageOptions = this.perPageOptions.slice(0);
+      const isPerPageOptionsValid = perPageOptions.every(v => {
+        return typeof v == "number" && v >= 1
+      });
+
+      if (!isPerPageOptionsValid) perPageOptions = [10, 25, 50];
+      perPageOptions.sort((a, b) => a - b);
+
+      return perPageOptions;
+    },
     recordTotal() {
       const { isFiltered, filteredTotal } = this.filteredOption;
       if (isFiltered) return filteredTotal;
