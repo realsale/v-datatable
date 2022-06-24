@@ -235,6 +235,8 @@ export default {
       });
 
       if (!isPerPageOptionsValid) perPageOptions = [10, 25, 50];
+
+      perPageOptions = [...new Set(perPageOptions)];
       perPageOptions.sort((a, b) => a - b);
 
       return perPageOptions;
