@@ -1,4 +1,4 @@
-# v-datatable
+# vjs-datatable
 
 Datatable component for Vue 2.x
 
@@ -25,7 +25,7 @@ Datatable component for Vue 2.x
 ## Install
 
 ```bash
-npm install v-datatable --save
+npm install vjs-datatable --save
 ```
 
 ## Import
@@ -35,7 +35,7 @@ npm install v-datatable --save
 > ```js
 > import Vue from "vue";
 > import App from "./App.vue";
-> import DataTable from "v-datatable";
+> import DataTable from "vjs-datatable";
 >
 > Vue.use(DataTable);
 >
@@ -48,7 +48,7 @@ npm install v-datatable --save
 >
 > ```html
 > <script>
-> import DataTable from "v-datatable";
+> import DataTable from "vjs-datatable";
 >
 > export default {
 >   components: {
@@ -63,14 +63,14 @@ npm install v-datatable --save
 > ```html
 > <!-- peer dependency -->
 > <script src="https://cdn.jsdelivr.net/npm/vue@^2.6.11/dist/vue.min.js"></script>
-> <!-- v-datatable -->
-> <script src="https://cdn.jsdelivr.net/npm/v-datatable@0.1.0/dist/v-datatable.umd.min.js"></script>
+> <!-- vjs-datatable -->
+> <script src="https://cdn.jsdelivr.net/npm/vjs-datatable@0.1.0/dist/vjs-datatable.umd.min.js"></script>
 > 
 > <script>
 >   new Vue({
 >     el: "#app",
 >     components: {
->       DataTable: window["v-datatable"]
+>       DataTable: window["vjs-datatable"]
 >     }
 >   });
 > </script>

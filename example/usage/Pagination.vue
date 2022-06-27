@@ -10,7 +10,7 @@
       to use pagination.
     </p>
     <p>
-      You can also specify the initial page you want your v-datatable navigate
+      You can also specify the initial page you want your vjs-datatable navigate
       to, by setting <code>pagination="{initialPage: 3}"</code>.<br />
 
       Initial page will not accept negative value and higher than the computed

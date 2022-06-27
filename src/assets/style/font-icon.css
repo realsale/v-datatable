@@ -1,9 +1,9 @@
 @font-face {
-  font-family: 'vdatatable-font-icons';
+  font-family: 'vjs-datatable-font-icons';
   src:
-    url('../fonts/vdatatable-font-icons.ttf?5j4p7y') format('truetype'),
-    url('../fonts/vdatatable-font-icons.woff?5j4p7y') format('woff'),
-    url('../fonts/vdatatable-font-icons.svg?5j4p7y#vdatatable-font-icons') format('svg');
+    url('../fonts/vjs-datatable-font-icons.ttf?5j4p7y') format('truetype'),
+    url('../fonts/vjs-datatable-font-icons.woff?5j4p7y') format('woff'),
+    url('../fonts/vjs-datatable-font-icons.svg?5j4p7y#vjs-datatable-font-icons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -11,7 +11,7 @@
 
 ._icon {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'vdatatable-font-icons' !important;
+  font-family: 'vjs-datatable-font-icons' !important;
   speak: never;
   font-style: normal;
   font-weight: normal;

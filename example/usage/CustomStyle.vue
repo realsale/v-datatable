@@ -3,7 +3,7 @@
     <h3>Default and Customizable Style</h3>
 
     <p>
-      v-datatable component allows you to fully customize its styles by passing
+      vjs-datatable component allows you to fully customize its styles by passing
       an object containing a list of classes you want to customize into
       <code>dtClasses="{table: 'custom-table-class'}"</code>.
     </p>

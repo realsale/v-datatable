@@ -1,5 +1,5 @@
 {
-  "name": "v-datatable",
+  "name": "vjs-datatable",
   "version": "0.1.0",
   "description": "Datatable component for Vue 2.x",
   "keywords": [
@@ -11,22 +11,24 @@
     "table-component",
     "component"
   ],
-  "homepage": "https://github.com/realsale/v-datatable#readme",
+  "homepage": "https://github.com/realsale/vjs-datatable#readme",
   "bugs": {
-    "url": "https://github.com/realsale/v-datatable/issues"
+    "url": "https://github.com/realsale/vjs-datatable/issues"
   },
   "license": "MIT",
   "author": "realsale <pwedesaken@gmail.com>",
-  "files": ["dist/*"],
-  "main": "dist/v-datatable.common.js",
+  "files": [
+    "dist/*"
+  ],
+  "main": "dist/vjs-datatable.common.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/realsale/v-datatable.git"
+    "url": "https://github.com/realsale/vjs-datatable.git"
   },
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve ./example/main.js",
-    "build": "vue-cli-service build --target lib --name v-datatable ./src/index.js",
+    "build": "vue-cli-service build --target lib --name vjs-datatable ./src/index.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {},
