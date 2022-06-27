@@ -57,14 +57,42 @@ npm install v-datatable --save
 > };
 > </script>
 > ```
+>
+> ### CDN
+>
+> ```html
+> <!-- peer dependency -->
+> <script src="https://cdn.jsdelivr.net/npm/vue@^2.6.11/dist/vue.min.js"></script>
+> <!-- v-datatable -->
+> <script src="https://cdn.jsdelivr.net/npm/v-datatable@0.1.0/dist/v-datatable.umd.min.js"></script>
+> 
+> <script>
+>   new Vue({
+>     el: "#app",
+>     components: {
+>       DataTable: window["v-datatable"]
+>     }
+>   });
+> </script>
+> ```
 
 ## Usage
 
-```html
-<template>
-  <DataTable :data="rows" :columns="columns" />
-</template>
-```
+> ### SFC
+>
+> ```html
+> <template>
+>   <DataTable :data="rows" :columns="columns" />
+> </template>
+> ```
+>
+> ### DOM
+>
+> ```html
+> <body>
+>   <data-table :data="rows" :columns="columns"></data-table>
+> </body>
+> ```
 
 ## Props
 
